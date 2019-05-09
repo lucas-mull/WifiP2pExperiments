@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/relative_layout_wifi_on"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	app:layout_behavior="@string/appbar_scrolling_view_behavior"
+	tools:showIn="@layout/activity_main">
+
+	<TextView
+		android:id="@+id/labelNewDevices"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_margin="5dp"
+		android:padding="5dp"
+		android:text="Découvrir : "
+		android:textColor="@color/colorAccent"
+		android:textSize="@dimen/abc_text_size_medium_material" />
+	<ImageButton
+		android:id="@+id/discoveryRefreshButton"
+		android:layout_width="24dp"
+		android:layout_height="24dp"
+		android:layout_alignTop="@id/labelNewDevices"
+		android:layout_alignBottom="@id/labelNewDevices"
+		android:src="@drawable/ic_refresh"
+		android:background="@color/transparent"
+		android:padding="5dp"
+		android:layout_toRightOf="@id/labelNewDevices" />
+	<ProgressBar
+		android:id="@+id/discoveryProgressBar"
+		android:indeterminate="true"
+		android:layout_width="24dp"
+		android:layout_height="24dp"
+		android:layout_toRightOf="@id/labelNewDevices"
+		android:layout_alignTop="@id/labelNewDevices"
+		android:layout_alignBottom="@id/labelNewDevices"
+		android:padding="5dp"/>
+	<android.support.v7.widget.RecyclerView
+		android:id="@+id/recyclerViewNewDevices"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="5dp"
+		android:layout_below="@id/labelNewDevices" />
+	<TextView 
+		android:id="@+id/title_connection_state"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:text="Connexion"
+		android:textColor="@color/colorAccent"
+		android:padding="5dp"
+		android:layout_margin="5dp"
+		android:layout_below="@id/recyclerViewNewDevices"
+		android:textSize="@dimen/abc_text_size_medium_material"/>
+	<TextView 
+		android:id="@+id/label_status"
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"
+		android:layout_below="@id/title_connection_state"
+		android:textStyle="bold"
+		android:padding="5dp"
+		android:text="Statut :" />
+	<TextView 
+		android:id="@+id/txt_status"
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_toEndOf="@id/label_status"
+		android:layout_alignTop="@id/label_status"
+		android:layout_alignBottom="@id/label_status"
+		android:gravity="center_vertical"
+		android:text="Non connecté" />
+	<TextView 
+		android:id="@+id/label_type"
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"
+		android:layout_below="@id/label_status"
+		android:textStyle="bold"
+		android:padding="5dp"
+		android:text="Type :" />
+	<TextView 
+		android:id="@+id/txt_type"
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_toEndOf="@id/label_type"
+		android:layout_alignTop="@id/label_type"
+		android:layout_alignBottom="@id/label_type"
+		android:gravity="center_vertical"
+		android:text="Client/serveur/non déterminé" />
+	<TextView 
+		android:id="@+id/title_group_state"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:text="Groupe"
+		android:textColor="@color/colorAccent"
+		android:padding="5dp"
+		android:layout_margin="5dp"
+		android:layout_below="@id/label_type"
+		android:textSize="@dimen/abc_text_size_medium_material"/>
+	<TextView 
+		android:id="@+id/label_ssid"
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"
+		android:layout_below="@id/title_group_state"
+		android:textStyle="bold"
+		android:padding="5dp"
+		android:text="SSID :" />
+	<TextView 
+		android:id="@+id/txt_ssid"
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_toEndOf="@id/label_ssid"
+		android:layout_alignTop="@id/label_ssid"
+		android:layout_alignBottom="@id/label_ssid"
+		android:gravity="center_vertical"
+		android:text="My SSID" />
+	<TextView 
+		android:id="@+id/label_passphrase"
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"
+		android:layout_below="@id/label_ssid"
+		android:textStyle="bold"		
+		android:padding="5dp"
+		android:text="Passphrase :" />
+	<TextView 
+		android:id="@+id/txt_passphrase"
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_toEndOf="@id/label_passphrase"
+		android:layout_alignTop="@id/label_passphrase"
+		android:layout_alignBottom="@id/label_passphrase"
+		android:gravity="center_vertical"
+		android:text="My passhprase" />
+	<TextView 
+		android:id="@+id/label_members"
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"
+		android:layout_below="@id/label_passphrase"
+		android:textStyle="bold"		
+		android:padding="5dp"
+		android:text="Membres :" />
+	<android.support.v7.widget.RecyclerView
+		android:id="@+id/recyclerViewGroupMembers"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="5dp"
+		android:layout_below="@id/label_members" />
+
+</RelativeLayout>

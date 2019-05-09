@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/relative_layout_wifi_on"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/activity_mode_picker">
+
+	<ImageView 
+		android:id="@+id/img_wifi_tethering"
+		android:layout_width="72dp"
+		android:layout_height="72dp"
+		android:src="@drawable/ic_wifi_tethering"
+		android:tint="@color/colorPrimary"
+		android:layout_centerHorizontal="true"
+		android:layout_marginTop="72dp" />
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerHorizontal="true"
+		android:layout_below="@+id/img_wifi_tethering"
+		android:layout_margin="5dp"
+		android:padding="5dp"
+		android:text="Bienvenue !"
+		style="@style/TextAppearance.AppCompat.Title" />
+
+	<Button
+		android:id="@+id/btn_join_group"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Rejoindre un groupe"
+		android:layout_centerInParent="true"
+		style="@style/Widget.AppCompat.Button.Colored" />
+
+	<TextView
+		android:id="@+id/label_or"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:layout_below="@+id/btn_join_group"
+		android:padding="5dp"
+		android:text="OU" />
+
+	<Button
+		android:id="@+id/test"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/label_or"
+		android:layout_centerHorizontal="true"
+		android:text="Créer un groupe"
+		style="@style/Widget.AppCompat.Button.Borderless.Colored"	/>
+
+</RelativeLayout>
