@@ -1,15 +1,18 @@
 ﻿
 using Android.App;
+using Android.Content.PM;
 using Android.Net;
 using Android.Net.Wifi.P2p;
 using Android.OS;
+using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using iDatech.WifiP2p.Poc.Activities.Views;
+using iDatech.WifiP2p.Poc.Permissions;
 using iDatech.WifiP2p.Poc.WifiP2p.Enums;
 using iDatech.WifiP2p.Poc.WifiP2p.Implementations;
 using iDatech.WifiP2p.Poc.WifiP2p.Interfaces;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace iDatech.WifiP2p.Poc.Activities
 {
@@ -28,6 +31,21 @@ namespace iDatech.WifiP2p.Poc.Activities
         /// </summary>
         private bool m_AreDetailsShown;
 
+        /// <summary>
+        /// The adapter for the recycler view.
+        /// </summary>
+        private WifiPeerAdapter m_Adapter;
+
+        /// <summary>
+        /// The list of connected clients.
+        /// </summary>
+        private HashSet<WifiP2pDevice> m_Clients;
+
+        /// <summary>
+        /// The permission service.
+        /// </summary>
+        private IPermissionService m_PermissionService;
+
         #endregion Instance variables
 
         #region Methods
@@ -37,21 +55,31 @@ namespace iDatech.WifiP2p.Poc.Activities
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_access_point);
 
-            //Android.Support.V7.Widget.Toolbar toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbar);
-            //SetSupportActionBar(toolbar);
-
             m_Views = new AccessPointViews(this);
 
-            m_Views.DetailsLayout.Visibility = Android.Views.ViewStates.Gone;
+            m_Views.DetailsLayout.Visibility = ViewStates.Gone;
 
-            WifiP2pManager.CreateGroup(WifiP2pChannel, new WifiP2pActionListener(this, EWifiP2pAction.CreateGroup, () =>
-            {
-                Toast.MakeText(this, "Groupe créé avec succès !", ToastLength.Short).Show();
-            }));
+            m_PermissionService = new PermissionService(this);
+
+            m_Clients = new HashSet<WifiP2pDevice>();
+            m_Adapter = new WifiPeerAdapter(m_Clients);
+            m_Views.MembersRecyclerView.SetAdapter(m_Adapter);
 
             FindViewById<ViewGroup>(Resource.Id.layout_root).LayoutTransition.EnableTransitionType(Android.Animation.LayoutTransitionType.Changing);
 
             InitializeButtons();
+
+            if (!m_PermissionService.IsPermissionGroupGranted(PermissionConstants.WifiP2pPermissionGroup))
+            {
+                m_PermissionService.RequestPermissions(PermissionConstants.WifiP2pPermissionsGroupId, PermissionConstants.WifiP2pPermissionGroup);
+            }
+            else
+            {
+                WifiP2pManager.CreateGroup(WifiP2pChannel, new WifiP2pActionListener(this, EWifiP2pAction.CreateGroup, () =>
+                {
+                    Toast.MakeText(this, "Groupe créé avec succès !", ToastLength.Short).Show();
+                }));
+            }
         }
 
         /// <summary>
@@ -74,14 +102,57 @@ namespace iDatech.WifiP2p.Poc.Activities
         }
 
         /// <summary>
+        /// <see cref="Activity.OnRequestPermissionsResult(int, string[], Permission[])"/>
+        /// </summary>
+        override public void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
+        {
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+
+            switch (requestCode)
+            {
+                case PermissionConstants.WifiP2pPermissionsGroupId:
+                    bool allGranted = true;
+                    for (int i = 0; i < permissions.Length; i++)
+                    {
+                        if (grantResults[i] != Permission.Granted)
+                        {
+                            allGranted = false;
+                            break;
+                        }
+                    }
+
+                    if (!allGranted)
+                    {
+                        Toast.MakeText(this, $"Permissions refusées pour le groupe {nameof(PermissionConstants.WifiP2pPermissionGroup)}", ToastLength.Short).Show();
+                    }
+                    else
+                    {
+                        WifiP2pManager.CreateGroup(WifiP2pChannel, new WifiP2pActionListener(this, EWifiP2pAction.CreateGroup, () =>
+                        {
+                            Toast.MakeText(this, "Groupe créé avec succès !", ToastLength.Short).Show();
+                        }));
+                    }
+
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
         /// <see cref="IWifiP2pCallbacksHandler.OnWifiP2pConnectionChanged(NetworkInfo, WifiP2pInfo, WifiP2pGroup)"/>
         /// </summary>
         override public void OnWifiP2pConnectionChanged(NetworkInfo networkInfo, WifiP2pInfo p2pInfo, WifiP2pGroup groupInfo)
         {
             m_Views.SsidTextView.Text = groupInfo.NetworkName;
 
-            m_Views.MembersRecyclerView.SetAdapter(new WifiPeerAdapter(groupInfo.ClientList.ToList()));
-            m_Views.MembersRecyclerView.GetAdapter().NotifyDataSetChanged();
+            foreach (WifiP2pDevice device in groupInfo.ClientList)
+            {
+                m_Clients.Add(device);
+            }
+
+            m_Adapter.NotifyDataSetChanged();
         }
 
         /// <summary>
@@ -97,7 +168,7 @@ namespace iDatech.WifiP2p.Poc.Activities
         {
             m_Views.DetailsButton.Click += (e, args) =>
             {
-                m_Views.DetailsLayout.Visibility = m_AreDetailsShown ? Android.Views.ViewStates.Gone : Android.Views.ViewStates.Visible;
+                m_Views.DetailsLayout.Visibility = m_AreDetailsShown ? ViewStates.Gone : Android.Views.ViewStates.Visible;
                 m_Views.DetailsButton.Text = m_AreDetailsShown ? "Détails" : "Cacher les détails";
                 m_AreDetailsShown = !m_AreDetailsShown;
             };

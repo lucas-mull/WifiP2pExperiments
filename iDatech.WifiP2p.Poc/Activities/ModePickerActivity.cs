@@ -4,7 +4,7 @@ using Android.Net.Wifi;
 using Android.OS;
 using Android.Support.V7.App;
 using Android.Views;
-using Android.Widget;
+using iDatech.WifiP2p.Poc.Activities.Views;
 using System;
 
 namespace iDatech.WifiP2p.Poc.Activities
@@ -15,30 +15,14 @@ namespace iDatech.WifiP2p.Poc.Activities
         #region Instance variables
 
         /// <summary>
-        /// The button displayed at the center of the screen when the wifi is disabled.
+        /// Useful views in this layout.
         /// </summary>
-        private ImageButton m_WifiDisabledButton;
-
-        /// <summary>
-        /// The layout displayed if the wifi is OFF on startup.
-        /// </summary>
-        private RelativeLayout m_WifiOffLayout;
-
-        /// <summary>
-        /// The layout displayed if the wifi is ON on startup.
-        /// </summary>
-        private RelativeLayout m_WifiOnLayout;
-
-        /// <summary>
-        /// Button used to create a Wifi P2P group from this device.
-        /// </summary>
-        private Button m_CreateGroupButton;
+        private ModePickerViews m_Views;
 
         /// <summary>
         /// The WiFi manager handling wifi activation state.
         /// </summary>
         private WifiManager m_WifiManager;
-
 
         #endregion Instance variables
 
@@ -59,13 +43,10 @@ namespace iDatech.WifiP2p.Poc.Activities
 
             m_WifiManager = (WifiManager)GetSystemService(WifiService);
 
-            m_WifiOffLayout = FindViewById<RelativeLayout>(Resource.Id.relative_layout_wifi_off);
-            m_WifiOnLayout = FindViewById<RelativeLayout>(Resource.Id.relative_layout_wifi_on);
-            m_WifiDisabledButton = FindViewById<ImageButton>(Resource.Id.btn_wifi_disabled);
-            m_CreateGroupButton = FindViewById<Button>(Resource.Id.btn_create_group);
+            m_Views = new ModePickerViews(this);
 
-            m_WifiOffLayout.Visibility = m_WifiManager.IsWifiEnabled ? ViewStates.Gone : ViewStates.Visible;
-            m_WifiOnLayout.Visibility = m_WifiManager.IsWifiEnabled ? ViewStates.Visible : ViewStates.Gone;
+            m_Views.WifiOffLayout.Visibility = m_WifiManager.IsWifiEnabled ? ViewStates.Gone : ViewStates.Visible;
+            m_Views.WifiOnLayout.Visibility = m_WifiManager.IsWifiEnabled ? ViewStates.Visible : ViewStates.Gone;
         }
 
         /// <summary>
@@ -75,8 +56,9 @@ namespace iDatech.WifiP2p.Poc.Activities
         {
             base.OnResume();
 
-            m_WifiDisabledButton.Click += ActivateWifi;
-            m_CreateGroupButton.Click += GoToAccessPointActivity;
+            m_Views.WifiDisabledButton.Click += ActivateWifi;
+            m_Views.CreateGroupButton.Click += GoToAccessPointActivity;
+            m_Views.JoinGroupButton.Click += GoToClientActivity;
         }
 
         /// <summary>
@@ -86,8 +68,9 @@ namespace iDatech.WifiP2p.Poc.Activities
         {
             base.OnPause();
 
-            m_WifiDisabledButton.Click -= ActivateWifi;
-            m_CreateGroupButton.Click -= GoToAccessPointActivity;
+            m_Views.WifiDisabledButton.Click -= ActivateWifi;
+            m_Views.CreateGroupButton.Click -= GoToAccessPointActivity;
+            m_Views.JoinGroupButton.Click -= GoToClientActivity;
         }
 
         #endregion Activity callbacks
@@ -99,8 +82,8 @@ namespace iDatech.WifiP2p.Poc.Activities
         private void ActivateWifi(object o, EventArgs args)
         {
             m_WifiManager.SetWifiEnabled(true);
-            m_WifiOffLayout.Visibility = ViewStates.Gone;
-            m_WifiOnLayout.Visibility = ViewStates.Visible;
+            m_Views.WifiOffLayout.Visibility = ViewStates.Gone;
+            m_Views.WifiOnLayout.Visibility = ViewStates.Visible;
         }
 
         /// <summary>
@@ -109,6 +92,14 @@ namespace iDatech.WifiP2p.Poc.Activities
         private void GoToAccessPointActivity(object o, EventArgs args)
         {
             StartActivity(typeof(AccessPointActivity));
+        }
+
+        /// <summary>
+        /// Start the <see cref="ClientActivity"/>
+        /// </summary>
+        private void GoToClientActivity(object e, EventArgs args)
+        {
+            StartActivity(typeof(ClientActivity));
         }
 
         #endregion Methods

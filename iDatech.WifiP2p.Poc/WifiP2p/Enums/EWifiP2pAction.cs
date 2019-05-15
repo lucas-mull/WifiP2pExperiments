@@ -8,6 +8,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Enums
     public enum EWifiP2pAction
     {
         Discover,
+        StopDiscovery,
         CreateGroup,
         EndGroup,
         Connect,

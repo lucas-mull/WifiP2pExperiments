@@ -45,7 +45,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
             m_WifiP2pManager = wifiP2pManager ?? throw new ArgumentNullException(nameof(wifiP2pManager));
             m_Channel = channel ?? throw new ArgumentNullException(nameof(channel));
             m_CallbackHandler = callbackHandler ?? throw new ArgumentNullException(nameof(callbackHandler));
-        }
+        }        
 
         #endregion Constructors
 

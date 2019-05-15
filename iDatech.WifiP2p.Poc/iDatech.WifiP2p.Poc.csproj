@@ -57,8 +57,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\AccessPointActivity.cs" />
+    <Compile Include="Activities\ClientActivity.cs" />
     <Compile Include="Activities\ModePickerActivity.cs" />
     <Compile Include="Activities\Views\AccessPointViews.cs" />
+    <Compile Include="Activities\Views\ClientViews.cs" />
+    <Compile Include="Activities\Views\ModePickerViews.cs" />
     <Compile Include="Permissions\IPermissionService.cs" />
     <Compile Include="Permissions\PermissionConstants.cs" />
     <Compile Include="Permissions\PermissionService.cs" />
@@ -70,6 +73,7 @@
     <Compile Include="WifiP2p\AsyncTasks\AbstractWifiP2pAsyncTaskParams.cs" />
     <Compile Include="WifiP2p\AsyncTasks\AbstractWifiP2pAsyncTask.cs" />
     <Compile Include="WifiP2p\AsyncTasks\ClientReceiveAsyncTask.cs" />
+    <Compile Include="WifiP2p\AsyncTasks\DiscoverAsyncTask.cs" />
     <Compile Include="WifiP2p\AsyncTasks\ServerToClientAsyncTask.cs" />
     <Compile Include="WifiP2p\AsyncTasks\PingServerAsyncTask.cs" />
     <Compile Include="WifiP2p\Enums\EWifiState.cs" />
@@ -202,6 +206,9 @@
     <AndroidResource Include="Resources\layout\content_client.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_baseline_mood_bad.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
