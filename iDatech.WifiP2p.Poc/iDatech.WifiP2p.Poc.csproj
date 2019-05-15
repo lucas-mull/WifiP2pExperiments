@@ -56,8 +56,9 @@
     <Reference Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activities\AccessPointActivity.cs" />
     <Compile Include="Activities\ModePickerActivity.cs" />
-    <Compile Include="Activities\MainActivity.cs" />
+    <Compile Include="Activities\Views\AccessPointViews.cs" />
     <Compile Include="Permissions\IPermissionService.cs" />
     <Compile Include="Permissions\PermissionConstants.cs" />
     <Compile Include="Permissions\PermissionService.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="WifiP2p\AsyncTasks\PingServerAsyncTask.cs" />
     <Compile Include="WifiP2p\Enums\EWifiState.cs" />
     <Compile Include="WifiP2p\Implementations\WifiDirectManager.cs" />
+    <Compile Include="WifiP2p\Implementations\AbstractWifiP2pActivity.cs" />
     <Compile Include="WifiP2p\Interfaces\IWifiP2pCallbacksHandler.cs" />
     <Compile Include="WifiPeerAdapter.cs" />
     <Compile Include="WifiP2p\Enums\EWifiP2pAction.cs" />
@@ -87,12 +89,6 @@
     <None Include="Assets\AboutAssets.txt" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\activity_main.axml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\content_main_wifi_on.axml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
     <AndroidResource Include="Resources\values\colors.xml" />
     <AndroidResource Include="Resources\values\dimens.xml" />
     <AndroidResource Include="Resources\values\ic_launcher_background.xml" />
@@ -119,6 +115,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.Android.Support.Design" Version="27.0.2.1" />
+    <PackageReference Include="Xamarin.Android.Support.v7.CardView">
+      <Version>27.0.2.1</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ic_refresh.xml" />
@@ -181,6 +180,26 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\content_mode_picker_wifi_on.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\activity_access_point.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\content_access_point.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\activity_client.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\content_client.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

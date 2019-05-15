@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/layout_root"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:layout_margin="16dp"
+	android:animateLayoutChanges="true">
+
+	<android.support.v7.widget.CardView
+		android:id="@+id/cardview_access_point"
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_margin="5dp">
+
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
+
+			<TextView
+				android:id="@+id/label_access_point"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginStart="16dp"
+				android:text="Point d'accès"
+				android:layout_alignParentStart="true"
+				style="@style/Base.TextAppearance.AppCompat.Title" />			
+			
+			<TextView
+				android:id="@+id/txt_ssid"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_below="@id/label_access_point"
+				android:layout_alignStart="@id/label_access_point"
+				android:layout_marginBottom="16dp"
+				android:text="Placeholder SSID" />
+			
+			<ImageView 
+				android:layout_width="56dp"
+				android:layout_height="56dp"
+				android:layout_alignParentEnd="true"
+				android:layout_margin="16dp"
+				android:src="@drawable/ic_wifi_tethering"
+				android:tint="@color/colorAccent" />
+
+			<RelativeLayout
+				android:id="@+id/layout_details"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="16dp"
+				android:layout_below="@+id/txt_ssid">
+
+				<ImageView
+					android:id="@+id/img_device_type"
+					android:layout_width="wrap_content"
+					android:layout_height="56dp"
+					android:layout_marginEnd="16dp"
+					android:foregroundGravity="center"
+					android:src="@drawable/ic_tablet_android" />
+
+				<TextView
+					android:id="@+id/txt_device_name"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_toEndOf="@id/img_device_type"
+					android:text="Device Name" />
+
+				<TextView
+					android:id="@+id/txt_mac_address"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_below="@id/txt_device_name"
+					android:layout_toEndOf="@id/img_device_type"
+					android:text="06:db:a2:x5:ws:08" />
+
+				<TextView
+					android:id="@+id/txt_status"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_below="@id/txt_mac_address"
+					android:layout_toEndOf="@id/img_device_type"
+					android:text="Connecté" />
+				
+			</RelativeLayout>
+
+			<Button
+				android:id="@+id/button_details"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="détails"
+				android:layout_below="@+id/layout_details"
+				style="@style/Widget.AppCompat.Button.Borderless.Colored" />
+
+			<Button
+				android:id="@+id/button_remove_group"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="déconnecter"
+				android:layout_toEndOf="@+id/button_details"
+				android:layout_alignTop="@+id/button_details"
+				style="@style/Widget.AppCompat.Button.Borderless.Colored" />
+
+		</RelativeLayout>		
+
+	</android.support.v7.widget.CardView>
+
+<android.support.v7.widget.RecyclerView 
+		android:id="@+id/recyclerview_group_members"
+		android:layout_margin="5dp"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/cardview_access_point"
+		/>
+
+</RelativeLayout>

@@ -39,9 +39,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
         /// </summary>
         /// <param name="wifiP2pManager">The <see cref="WifiP2pManager"/> instance.</param>
         /// <param name="channel">The used channel.</param>
-        /// <param name="onPeersDiscovered">The action to execute once peers have been discovered.</param>
-        /// <param name="onP2pConnectionChanged">The callback to execute when a connection has been established / broken with a peer.</param>
-        /// <param name="onThisDeviceChanged">The callback to execute when the current device's details have changed.</param>
+        /// <param name="callbackHandler">The global callback handler for wifi P2P signals.</param>
         public WifiP2pBroadcastReceiver(WifiP2pManager wifiP2pManager, Channel channel, IWifiP2pCallbacksHandler callbackHandler)
         {
             m_WifiP2pManager = wifiP2pManager ?? throw new ArgumentNullException(nameof(wifiP2pManager));
@@ -66,7 +64,6 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
                     break;
 
                 case WifiP2pPeersChangedAction:
-                    //m_WifiP2pManager.RequestPeers(m_Channel, m_CallbackHandler);
                     WifiP2pDeviceList peers = (WifiP2pDeviceList)intent.GetParcelableExtra(ExtraP2pDeviceList);
                     m_CallbackHandler.OnPeersAvailable(peers);
                     break;

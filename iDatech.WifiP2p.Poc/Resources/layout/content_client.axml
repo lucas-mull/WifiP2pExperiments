@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">	
+
+	<TextView
+		android:id="@+id/label_pick_access_point"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"		
+		style="@style/TextAppearance.AppCompat.Title"
+		android:layout_margin="16dp"
+		android:text="Sélectionnez un point d'accès" />	
+
+	<ImageButton
+		android:id="@+id/button_refresh"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:layout_toEndOf="@id/label_pick_access_point"
+		android:layout_alignBaseline="@id/label_pick_access_point"
+		android:baselineAlignBottom="true"
+		android:backgroundTint="@color/transparent"
+		android:src="@drawable/ic_refresh" />
+
+	<android.support.v4.widget.SwipeRefreshLayout
+		android:id="@+id/refresh_layout"
+		android:layout_width="match_parent"
+		android:layout_below="@+id/label_pick_access_point"
+		android:layout_height="wrap_content">
+
+		<android.support.v7.widget.RecyclerView
+			android:id="recyclerview_access_points"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"			
+			android:layout_margin="16dp" />
+
+	</android.support.v4.widget.SwipeRefreshLayout>
+
+	<ProgressBar
+		android:id="@+id/progressbar_global"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:layout_centerInParent="true" />
+
+</RelativeLayout>

@@ -27,14 +27,24 @@ namespace iDatech.WifiP2p.Poc
             internal ImageView DeviceImage { get; }
 
             /// <summary>
-            /// The text view display the device's name.
+            /// The text view displaying the device's name.
             /// </summary>
             internal TextView DeviceName { get; }
 
             /// <summary>
-            /// A button to access the current device's settings.
+            /// The text view displaying the device address
             /// </summary>
-            internal ImageButton DeviceSettingsButton { get; }
+            internal TextView DeviceAddress { get; }
+
+            /// <summary>
+            /// The text view displaying the device connection status.
+            /// </summary>
+            internal TextView DeviceStatus { get; }
+
+            /// <summary>
+            /// The button used to send data to a client.
+            /// </summary>
+            internal Button SendButton { get; }
 
             #endregion Properties
 
@@ -48,7 +58,9 @@ namespace iDatech.WifiP2p.Poc
             {
                 DeviceImage = itemView.FindViewById<ImageView>(Resource.Id.img_device);
                 DeviceName = itemView.FindViewById<TextView>(Resource.Id.txt_device_name);
-                DeviceSettingsButton = itemView.FindViewById<ImageButton>(Resource.Id.btn_device_settings);
+                DeviceAddress = itemView.FindViewById<TextView>(Resource.Id.txt_mac_address);
+                DeviceStatus = itemView.FindViewById<TextView>(Resource.Id.txt_mac_address);
+                SendButton = itemView.FindViewById<Button>(Resource.Id.button_send);
             }
 
             #endregion Constructors
@@ -66,7 +78,7 @@ namespace iDatech.WifiP2p.Poc
         /// <summary>
         /// Action to execute when an item is clicked.
         /// </summary>
-        private Action<WifiP2pDevice> m_OnItemClick;
+        readonly private Action<WifiP2pDevice> m_OnItemClick;
 
         #endregion Instance variables
 

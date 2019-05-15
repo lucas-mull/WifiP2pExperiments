@@ -14,7 +14,7 @@
 		android:layout_height="72dp"
 		android:layout_width="72dp"
 		android:layout_centerInParent="true"
-		android:backgroundTint="?android:attr/colorPrimary"/>
+		android:backgroundTint="@color/material_grey_300"/>
 	
 	<TextView
 		android:id="@+id/txt_no_wifi"
@@ -23,7 +23,6 @@
 		android:layout_margin="5dp"
 		android:layout_below="@+id/btn_wifi_disabled"
 		android:gravity="center"
-		android:text="Le Wifi est désactivé, cliquez pour l'activer"
-		android:textColor="@color/colorPrimaryDark" />
+		android:text="Le Wifi est désactivé, cliquez pour l'activer" />
 
 </RelativeLayout>

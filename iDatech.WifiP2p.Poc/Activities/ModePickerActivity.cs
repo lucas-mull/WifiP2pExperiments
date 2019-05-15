@@ -9,7 +9,7 @@ using System;
 
 namespace iDatech.WifiP2p.Poc.Activities
 {
-    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = false)]
+    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
     public class ModePickerActivity : AppCompatActivity
     {
         #region Instance variables
@@ -28,6 +28,11 @@ namespace iDatech.WifiP2p.Poc.Activities
         /// The layout displayed if the wifi is ON on startup.
         /// </summary>
         private RelativeLayout m_WifiOnLayout;
+
+        /// <summary>
+        /// Button used to create a Wifi P2P group from this device.
+        /// </summary>
+        private Button m_CreateGroupButton;
 
         /// <summary>
         /// The WiFi manager handling wifi activation state.
@@ -57,11 +62,10 @@ namespace iDatech.WifiP2p.Poc.Activities
             m_WifiOffLayout = FindViewById<RelativeLayout>(Resource.Id.relative_layout_wifi_off);
             m_WifiOnLayout = FindViewById<RelativeLayout>(Resource.Id.relative_layout_wifi_on);
             m_WifiDisabledButton = FindViewById<ImageButton>(Resource.Id.btn_wifi_disabled);
+            m_CreateGroupButton = FindViewById<Button>(Resource.Id.btn_create_group);
 
             m_WifiOffLayout.Visibility = m_WifiManager.IsWifiEnabled ? ViewStates.Gone : ViewStates.Visible;
             m_WifiOnLayout.Visibility = m_WifiManager.IsWifiEnabled ? ViewStates.Visible : ViewStates.Gone;
-
-            
         }
 
         /// <summary>
@@ -72,6 +76,7 @@ namespace iDatech.WifiP2p.Poc.Activities
             base.OnResume();
 
             m_WifiDisabledButton.Click += ActivateWifi;
+            m_CreateGroupButton.Click += GoToAccessPointActivity;
         }
 
         /// <summary>
@@ -82,6 +87,7 @@ namespace iDatech.WifiP2p.Poc.Activities
             base.OnPause();
 
             m_WifiDisabledButton.Click -= ActivateWifi;
+            m_CreateGroupButton.Click -= GoToAccessPointActivity;
         }
 
         #endregion Activity callbacks
@@ -95,6 +101,14 @@ namespace iDatech.WifiP2p.Poc.Activities
             m_WifiManager.SetWifiEnabled(true);
             m_WifiOffLayout.Visibility = ViewStates.Gone;
             m_WifiOnLayout.Visibility = ViewStates.Visible;
+        }
+
+        /// <summary>
+        /// Start the <see cref="AccessPointActivity"/>
+        /// </summary>
+        private void GoToAccessPointActivity(object o, EventArgs args)
+        {
+            StartActivity(typeof(AccessPointActivity));
         }
 
         #endregion Methods

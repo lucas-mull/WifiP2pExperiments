@@ -27,6 +27,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.AsyncTasks
         {
             ServerSocket serverSocket = new ServerSocket(m_Port);
             Socket clientSocket = serverSocket.Accept();
+
             DataOutputStream outputStream = new DataOutputStream(clientSocket.OutputStream);
             outputStream.WriteUTF("Coucou");
             outputStream.Flush();
