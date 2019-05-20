@@ -6,13 +6,15 @@ using Android.OS;
 using Android.Support.V7.App;
 using iDatech.WifiP2p.Poc.WifiP2p.Enums;
 using iDatech.WifiP2p.Poc.WifiP2p.Interfaces;
+using System;
+using static Android.Net.Wifi.P2p.WifiP2pManager;
 
 namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
 {
     /// <summary>
     /// Base class for an activity that receives Wifi P2P related callbacks.
     /// </summary>
-    abstract public class AbstractWifiP2pActivity : AppCompatActivity, IWifiP2pCallbacksHandler
+    abstract public class AbstractWifiP2pActivity : AppCompatActivity, IWifiP2pCallbacksHandler, IGroupInfoListener, IPeerListListener, IConnectionInfoListener
     {
         #region Instance variables
 
@@ -38,7 +40,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
         /// <summary>
         /// The main channel used for Wifi P2P communications on this device.
         /// </summary>
-        protected WifiP2pManager.Channel WifiP2pChannel { get; set; }
+        protected Channel WifiP2pChannel { get; set; }
 
         #endregion Properties
 
@@ -81,7 +83,47 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
         }
 
         /// <summary>
-        /// <see cref="IWifiP2pCallbacksHandler.OnPeersAvailable(WifiP2pDeviceList)"/>
+        /// Request an updated peer list explicitly.
+        /// </summary>
+        /// <remarks>Can return an empty list if no peers have been discovered.
+        /// Catch the results with the method <see cref="OnPeersAvailable(WifiP2pDeviceList)"/></remarks>
+        protected void RequestUpdatedPeerList()
+        {
+            WifiP2pManager.RequestPeers(WifiP2pChannel, this);
+        }
+
+        /// <summary>
+        /// Request for updated information about the current group.
+        /// </summary>
+        /// <remarks>Only the group owner can obtain the extended info about the group. Clients can only receive the owner device info.
+        /// Catch the results with the method <see cref="OnGroupInfoAvailable(WifiP2pGroup)"/></remarks>
+        protected void RequestGroupInfo()
+        {
+            WifiP2pManager.RequestGroupInfo(WifiP2pChannel, this);
+        }
+
+        /// <summary>
+        /// Request for updated information about the current connection i.e. if a group has been formed, the group owner inet address and whether or not this device is the group owner.
+        /// </summary>
+        /// <remarks>Catch the results with the method <see cref="OnConnectionInfoAvailable(WifiP2pInfo)"/></remarks>
+        protected void RequestConnectionInfo()
+        {
+            WifiP2pManager.RequestConnectionInfo(WifiP2pChannel, this);
+        }
+
+        ///// <summary>
+        ///// Start another <see cref="AbstractWifiP2pActivity"/> and pass in the current Wifi P2P parameters to avoid resetting an existing connection.
+        ///// </summary>
+        ///// <param name="activity">The activity to start</param>
+        //protected void StartWifi2pActivity(AbstractWifiP2pActivity activity) 
+        //{
+        //    Intent intent = new Intent(this, activity.GetType());
+        //    Bundle args = new Bundle();
+        //    args.Put
+        //}
+
+        /// <summary>
+        /// <see cref="IPeerListListener.OnPeersAvailable(WifiP2pDeviceList)"/>
         /// </summary>
         abstract public void OnPeersAvailable(WifiP2pDeviceList peers);
 
@@ -99,6 +141,16 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
         /// <see cref="IWifiP2pCallbacksHandler.OnWifiP2pStateChanged(EWifiState)"/>
         /// </summary>
         abstract public void OnWifiP2pStateChanged(EWifiState newState);
+
+        /// <summary>
+        /// <see cref="IGroupInfoListener.OnGroupInfoAvailable(WifiP2pGroup)"/>
+        /// </summary>
+        abstract public void OnGroupInfoAvailable(WifiP2pGroup group);
+
+        /// <summary>
+        /// <see cref="IConnectionInfoListener.OnConnectionInfoAvailable(WifiP2pInfo)"/>
+        /// </summary>
+        abstract public void OnConnectionInfoAvailable(WifiP2pInfo info);
 
         #endregion Methods
     }

@@ -2,7 +2,6 @@
 using Android.Net;
 using Android.Net.Wifi.P2p;
 using iDatech.WifiP2p.Poc.WifiP2p.Enums;
-using iDatech.WifiP2p.Poc.WifiP2p.Interfaces;
 using System;
 using static Android.Net.Wifi.P2p.WifiP2pManager;
 
@@ -28,7 +27,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
         /// <summary>
         /// The handler for all the callbacks.
         /// </summary>
-        readonly private IWifiP2pCallbacksHandler m_CallbackHandler;
+        readonly private AbstractWifiP2pActivity m_CallbackHandler;
 
         #endregion Instance variables
 
@@ -40,12 +39,12 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
         /// <param name="wifiP2pManager">The <see cref="WifiP2pManager"/> instance.</param>
         /// <param name="channel">The used channel.</param>
         /// <param name="callbackHandler">The global callback handler for wifi P2P signals.</param>
-        public WifiP2pBroadcastReceiver(WifiP2pManager wifiP2pManager, Channel channel, IWifiP2pCallbacksHandler callbackHandler)
+        public WifiP2pBroadcastReceiver(WifiP2pManager wifiP2pManager, Channel channel, AbstractWifiP2pActivity callbackHandler)
         {
             m_WifiP2pManager = wifiP2pManager ?? throw new ArgumentNullException(nameof(wifiP2pManager));
             m_Channel = channel ?? throw new ArgumentNullException(nameof(channel));
             m_CallbackHandler = callbackHandler ?? throw new ArgumentNullException(nameof(callbackHandler));
-        }        
+        }
 
         #endregion Constructors
 

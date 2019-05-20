@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+	<ImageView
+		android:id="@+id/img_device"
+		android:layout_width="56dp"
+		android:layout_height="56dp"
+		android:padding="5dp"
+		android:src="@drawable/ic_phone_android" />
+
+	<LinearLayout
+		android:id="@+id/info_layout"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toEndOf="@+id/img_device"
+		android:layout_alignTop="@+id/img_device"
+		android:orientation="vertical">
+
+		<TextView
+			android:id="@+id/txt_device_name"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:text="Device name"/>	
+
+		<TextView
+			android:id="@+id/txt_mac_address"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:text="06:db:7c:ef:53"/>
+
+		<TextView
+			android:id="@+id/txt_status"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:text="Connecté"/>
+
+	</LinearLayout>	
+
+	<LinearLayout
+		android:id="@+id/layout_status"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:orientation="vertical"
+		android:layout_toEndOf="@id/info_layout"
+		android:layout_alignParentEnd="true"
+		android:gravity="center">
+
+		<TextView
+			android:id="@+id/txt_operation"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="opération en cours..."
+			android:gravity="center" />
+
+		<ProgressBar
+			android:id="@+id/progressbar_operation"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+
+	</LinearLayout>
+
+	<Button
+		android:id="@+id/button_send"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentEnd="true"
+		android:text="Envoyer"
+		android:layout_alignBottom="@id/img_device"
+		android:layout_alignTop="@id/img_device"
+		style="@style/Widget.AppCompat.Button.Borderless.Colored" />
+
+
+</RelativeLayout>

@@ -180,6 +180,16 @@ namespace iDatech.WifiP2p.Poc.Activities
             };
         }
 
+        public override void OnGroupInfoAvailable(WifiP2pGroup group)
+        {
+            //throw new System.NotImplementedException();
+        }
+
+        public override void OnConnectionInfoAvailable(WifiP2pInfo info)
+        {
+            //throw new System.NotImplementedException();
+        }
+
         #endregion Methods
     }
 }

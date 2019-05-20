@@ -20,16 +20,6 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.AsyncTasks
         /// </summary>
         private Socket m_Socket;
 
-        /// <summary>
-        /// The current offset for the input stream.
-        /// </summary>
-        private int m_CurrentReceiveOffset;
-
-        /// <summary>
-        /// The current offset for the output stream.
-        /// </summary>
-        private int m_CurrentSendOffset;
-
         #endregion Instance variables
 
         #region Constructors
@@ -51,6 +41,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.AsyncTasks
         override protected Java.Lang.Object DoInBackground(params Java.Lang.Object[] @params)
         {
             // First fetch the required action. The client always asks what it wants to do first.
+            Message message = 
         }
 
         /// <summary>

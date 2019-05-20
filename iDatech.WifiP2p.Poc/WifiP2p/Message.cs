@@ -58,18 +58,14 @@ namespace iDatech.WifiP2p.Poc.WifiP2p
                 var formatter = new BinaryFormatter();
                 object obj = formatter.Deserialize(new MemoryStream(buffer));
 
-                return new Message
+                return new Message(messageType)
                 {
-                    MessageType = messageType,
                     Length = objLength,
                     Object = obj
                 };
             }
 
-            return new Message
-            {
-                MessageType = messageType
-            };
+            return new Message(messageType);
         }
 
         #endregion Static methods
@@ -92,5 +88,42 @@ namespace iDatech.WifiP2p.Poc.WifiP2p
         public object Object { get; private set; }
 
         #endregion Properties
+
+        #region Constructors
+
+        /// <summary>
+        /// Default constructor.
+        /// Specify the message type.
+        /// </summary>
+        /// <param name="messageType">The message type.</param>
+        public Message(EMessageType messageType)
+        {
+            MessageType = messageType;
+        }
+
+        #endregion Constructors
+
+        #region Methods
+
+        /// <summary>
+        /// Set and send the object of this message.
+        /// </summary>
+        /// <param name="clientSocket">The socket to send the data through.</param>
+        /// <param name="obj">The object to send.</param>
+        /// <remarks>Depending on the current message type, only one object type will be supported.</remarks>
+        public void Send(Socket clientSocket, object obj)
+        {
+            Object = obj ?? throw new ArgumentNullException(nameof(obj));
+
+            var formatter = new BinaryFormatter();
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                formatter.Serialize(ms, obj);
+                clientSocket.Send(ms.ToArray());
+            }
+        }
+
+        #endregion Methods
     }
 }

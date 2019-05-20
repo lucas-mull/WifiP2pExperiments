@@ -31,12 +31,6 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Interfaces
         /// <param name="deviceDetails">The new details.</param>
         void OnThisDeviceChanged(WifiP2pDevice deviceDetails);
 
-        /// <summary>
-        /// Called whenever the list of peers has been updated.
-        /// </summary>
-        /// <param name="peers">The current list of peers.</param>
-        void OnPeersAvailable(WifiP2pDeviceList peers);
-
         #endregion Methods
     }
 }
