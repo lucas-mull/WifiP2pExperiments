@@ -1,7 +1,10 @@
 ﻿using Android.App;
 using Android.Net.Wifi.P2p;
 using Android.OS;
+using Java.Lang;
 using System;
+using System.IO;
+using System.Net.Sockets;
 
 namespace iDatech.WifiP2p.Poc.WifiP2p.AsyncTasks
 {
@@ -13,42 +16,83 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.AsyncTasks
         #region Instance variables
 
         /// <summary>
-        /// The application activity - needed to update UI for instance.
+        /// The connected client socket used for transmission.
         /// </summary>
-        readonly protected Activity m_Activity;
+        private Socket m_Socket;
 
         /// <summary>
-        /// The connection information. Used to fetch the server (group owner) 's address.
+        /// The current offset for the input stream.
         /// </summary>
-        readonly protected WifiP2pInfo m_ConnectionInfo;
+        private int m_CurrentReceiveOffset;
 
         /// <summary>
-        /// Communication port.
+        /// The current offset for the output stream.
         /// </summary>
-        readonly protected int m_Port;
-
-        /// <summary>
-        /// Requests timeout.
-        /// </summary>
-        readonly protected int m_RequestTimeout;
+        private int m_CurrentSendOffset;
 
         #endregion Instance variables
 
         #region Constructors
 
         /// <summary>
-        /// Default constructor passing in the relevant connection information.
+        /// Default constructor using a socket
         /// </summary>
-        /// <param name="activity">The application activity - needed to update UI for instance.</param>
-        /// <param name="connectionInfo">The Wifi P2P connection info.</param>
-        /// <param name="port">The communication port.</param>
-        /// <param name="requestTimeout">The time after which a request times out.</param>
-        protected AbstractWifiP2pAsyncTask(Activity activity, WifiP2pInfo connectionInfo, int port, int requestTimeout)
+        /// <param name="socket">The connected client socket.</param>
+        protected AbstractWifiP2pAsyncTask(Socket socket)
         {
-            m_Activity = activity ?? throw new ArgumentNullException(nameof(activity));
-            m_ConnectionInfo = connectionInfo ?? throw new ArgumentNullException(nameof(connectionInfo));
-            m_Port = port >= 1 ? port : throw new ArgumentException("Negative values are not valid port numbers", nameof(port));
-            m_RequestTimeout = requestTimeout;
+            if (!socket.Connected)
+            {
+                throw new InvalidOperationException("The specified socket is not connected and thus no communication can occur");
+            }
+
+            m_Socket = socket;
+        }
+
+        override protected Java.Lang.Object DoInBackground(params Java.Lang.Object[] @params)
+        {
+            // First fetch the required action. The client always asks what it wants to do first.
+        }
+
+        /// <summary>
+        /// Send a generic type to the other end of the socket.
+        /// </summary>
+        /// <typeparam name="T">The type to transmit.</typeparam>
+        /// <param name="obj">The object to send.</param>
+        protected void Send<T>(T obj)
+        {
+            // First write the type so that the other end knows what to deserialize.
+            
+        }
+
+        /// <summary>
+        /// Write a generic type to the stream.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        private void Write<T>()
+        {
+
+        }
+
+        /// <summary>
+        /// Receive 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        private void Receive<T>()
+        {
+            byte[] buffer = new byte[32];
+            m_Socket.
+        }
+
+        /// <summary>
+        /// Send a file to the other end of the socket.
+        /// </summary>
+        /// <param name="fileStream">The file stream.</param>
+        protected void SendFile(Stream fileStream)
+        {
+            if (fileStream is null)
+            {
+                throw new ArgumentNullException(nameof(fileStream));
+            }
         }
 
         #endregion Constructors

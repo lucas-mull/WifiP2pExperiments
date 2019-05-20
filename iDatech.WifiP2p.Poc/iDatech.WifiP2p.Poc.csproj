@@ -76,10 +76,14 @@
     <Compile Include="WifiP2p\AsyncTasks\DiscoverAsyncTask.cs" />
     <Compile Include="WifiP2p\AsyncTasks\ServerToClientAsyncTask.cs" />
     <Compile Include="WifiP2p\AsyncTasks\PingServerAsyncTask.cs" />
+    <Compile Include="WifiP2p\Enums\EMessageType.cs" />
     <Compile Include="WifiP2p\Enums\EWifiState.cs" />
     <Compile Include="WifiP2p\Implementations\WifiDirectManager.cs" />
     <Compile Include="WifiP2p\Implementations\AbstractWifiP2pActivity.cs" />
     <Compile Include="WifiP2p\Interfaces\IWifiP2pCallbacksHandler.cs" />
+    <Compile Include="WifiP2p\Interfaces\IWifiP2pMessage.cs" />
+    <Compile Include="WifiP2p\Message.cs" />
+    <Compile Include="WifiP2p\Services\ServerAcceptService.cs" />
     <Compile Include="WifiPeerAdapter.cs" />
     <Compile Include="WifiP2p\Enums\EWifiP2pAction.cs" />
     <Compile Include="WifiP2p\Implementations\WifiP2pActionListener.cs" />
