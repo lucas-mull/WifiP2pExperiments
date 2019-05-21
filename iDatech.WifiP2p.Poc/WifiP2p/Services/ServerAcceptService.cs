@@ -2,6 +2,7 @@
 using Android.Content;
 using System;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace iDatech.WifiP2p.Poc.WifiP2p.Services
 {
@@ -35,18 +36,22 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Services
 
         override protected void OnHandleIntent(Intent intent)
         {
+            Socket serverSocket = new Socket(SocketType.Stream, ProtocolType.Udp);
+
             while (true)
             {
-                Socket serverSocket = new Socket(SocketType.Stream, ProtocolType.Udp);
-
-                // TODO add client handling in a different thread.
-                HandleClient(serverSocket.Accept());
+                Socket clientSocket = serverSocket.Accept();
 
                 // A connection has been established, increment active sockets count
                 lock (m_Lock)
                 {
                     m_CurrentlyActiveSockets++;
                 }
+
+                ThreadPool.QueueUserWorkItem((o) =>
+                {
+                    HandleClient(clientSocket);
+                });
             }
         }
 
@@ -57,8 +62,13 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Services
                 throw new ArgumentException($"Socket is not connected.");
             }
 
-            // Receive the message from the client asynchronously.
-            Message message = Message.Receive(clientSocket);
+            // Receive the full message from the client.
+            Message message = Message.Receive(this, clientSocket);
+
+            if (message.IsCarryingData)
+            {
+
+            }
 
             // Process the message according to the type.
             switch (message.MessageType)

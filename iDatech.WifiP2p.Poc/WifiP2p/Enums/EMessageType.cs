@@ -1,4 +1,6 @@
-﻿namespace iDatech.WifiP2p.Poc.WifiP2p.Enums
+﻿using System.Linq;
+
+namespace iDatech.WifiP2p.Poc.WifiP2p.Enums
 {
     /// <summary>
     /// Define all the messages a server / client can receive.
@@ -30,5 +32,25 @@
         /// Message used by the server to answer a <see cref="RequestFile"/> message.
         /// </summary>
         SendFile
+    }
+
+    /// <summary>
+    /// Extension methods for the <see cref="EMessageType"/> enum.
+    /// </summary>
+    static public class EMessageTypeExtensions
+    {
+        #region Static methods
+
+        /// <summary>
+        /// Extension method to know if a specified message type is supposed to be carrying data.
+        /// </summary>
+        /// <param name="messageType">The message type.</param>
+        /// <returns><c>true</c> if the message type comes with data, <c>false</c> otherwise.</returns>
+        static public bool IsCarryingData(this EMessageType messageType)
+        {
+            return new[] { EMessageType.SendData, EMessageType.SendFile }.Contains(messageType);
+        }
+
+        #endregion Static methods
     }
 }

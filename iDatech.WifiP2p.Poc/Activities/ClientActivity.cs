@@ -226,6 +226,22 @@ namespace iDatech.WifiP2p.Poc.Activities
             StartDiscovering();
         }
 
+        /// <summary>
+        /// <see cref="AbstractWifiP2pActivity.OnGroupInfoAvailable(WifiP2pGroup)"/>
+        /// </summary>
+        override public void OnGroupInfoAvailable(WifiP2pGroup group)
+        {
+            // TODO
+        }
+
+        /// <summary>
+        /// <see cref="AbstractWifiP2pActivity.OnConnectionInfoAvailable(WifiP2pInfo)"/>
+        /// </summary>
+        override public void OnConnectionInfoAvailable(WifiP2pInfo info)
+        {
+            // TODO
+        }
+
         #endregion Methods
     }
 }

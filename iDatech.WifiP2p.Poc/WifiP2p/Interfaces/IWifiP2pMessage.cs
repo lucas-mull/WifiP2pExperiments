@@ -1,4 +1,5 @@
 ﻿using iDatech.WifiP2p.Poc.WifiP2p.Enums;
+using System.IO;
 
 namespace iDatech.WifiP2p.Poc.WifiP2p.Interfaces
 {
@@ -15,14 +16,19 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Interfaces
         EMessageType MessageType { get; }
 
         /// <summary>
-        /// The length in bytes of the object. Zero if no object is being sent.
+        /// The length in bytes of the object / file. Zero if no object / file is being sent.
         /// </summary>
-        int Length { get; }
+        long Length { get; }
 
         /// <summary>
         /// The object included in the message.
         /// </summary>
         object Object { get; }
+
+        /// <summary>
+        /// The file stream (if a file is being sent).
+        /// </summary>
+        Stream File { get; }
 
         #endregion Properties
     }

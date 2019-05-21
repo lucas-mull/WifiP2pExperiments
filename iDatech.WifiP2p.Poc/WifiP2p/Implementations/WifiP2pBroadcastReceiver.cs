@@ -77,6 +77,9 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
                     m_CallbackHandler.OnThisDeviceChanged(deviceDetails);
                     break;
 
+                case WifiP2pMessageIntent.ActionReceivedDataProgress:
+                    break;
+
                 default:
                     throw new NotSupportedException($"The action {intent.Action} is not handled by this receiver.");
             }
