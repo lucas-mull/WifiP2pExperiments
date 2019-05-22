@@ -1,4 +1,5 @@
-﻿using iDatech.WifiP2p.Poc.WifiP2p.Enums;
+﻿using Android.OS;
+using iDatech.WifiP2p.Poc.WifiP2p.Enums;
 using System.IO;
 
 namespace iDatech.WifiP2p.Poc.WifiP2p.Interfaces
@@ -23,12 +24,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Interfaces
         /// <summary>
         /// The object included in the message.
         /// </summary>
-        object Object { get; }
-
-        /// <summary>
-        /// The file stream (if a file is being sent).
-        /// </summary>
-        Stream File { get; }
+        IParcelable Object { get; }
 
         #endregion Properties
     }

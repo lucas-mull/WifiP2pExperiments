@@ -1,5 +1,6 @@
 ﻿
 using Android.App;
+using Android.Content;
 using Android.Content.PM;
 using Android.Net;
 using Android.Net.Wifi.P2p;
@@ -12,6 +13,7 @@ using iDatech.WifiP2p.Poc.Permissions;
 using iDatech.WifiP2p.Poc.WifiP2p.Enums;
 using iDatech.WifiP2p.Poc.WifiP2p.Implementations;
 using iDatech.WifiP2p.Poc.WifiP2p.Interfaces;
+using iDatech.WifiP2p.Poc.WifiP2p.Services;
 using System.Collections.Generic;
 
 namespace iDatech.WifiP2p.Poc.Activities
@@ -45,6 +47,11 @@ namespace iDatech.WifiP2p.Poc.Activities
         /// The permission service.
         /// </summary>
         private IPermissionService m_PermissionService;
+
+        /// <summary>
+        /// The intent used to start the <see cref="ServerAcceptService"/>.
+        /// </summary>
+        private Intent m_ServerServiceIntent;
 
         #endregion Instance variables
 
@@ -80,6 +87,8 @@ namespace iDatech.WifiP2p.Poc.Activities
                     Toast.MakeText(this, "Groupe créé avec succès !", ToastLength.Short).Show();
                 }));
             }
+
+            m_ServerServiceIntent = new Intent(this, typeof(ServerAcceptService));
         }
 
         /// <summary>
@@ -87,7 +96,7 @@ namespace iDatech.WifiP2p.Poc.Activities
         /// </summary>
         override public void OnPeersAvailable(WifiP2pDeviceList peers)
         {
-            //throw new System.NotImplementedException();
+            // Do nothing here, we're not interested in discovering peers.
         }
 
         /// <summary>
@@ -95,10 +104,10 @@ namespace iDatech.WifiP2p.Poc.Activities
         /// </summary>
         override public void OnThisDeviceChanged(WifiP2pDevice deviceDetails)
         {
+            // Update the device's details
             m_Views.DeviceNameTextView.Text = deviceDetails.DeviceName;
             m_Views.DeviceAddressTextView.Text = deviceDetails.DeviceAddress;
             m_Views.DeviceStatusTextView.Text = deviceDetails.Status.ToString();
-            //m_Views.DeviceTypeImageView.s
         }
 
         /// <summary>
@@ -145,14 +154,30 @@ namespace iDatech.WifiP2p.Poc.Activities
         /// </summary>
         override public void OnWifiP2pConnectionChanged(NetworkInfo networkInfo, WifiP2pInfo p2pInfo, WifiP2pGroup groupInfo)
         {
-            m_Views.SsidTextView.Text = groupInfo.NetworkName;
-
-            foreach (WifiP2pDevice device in groupInfo.ClientList)
+            if (networkInfo.IsConnected)
             {
-                m_Clients.Add(device);
-            }
+                if (!ServerDataSingleton.Instance.IsListening)
+                {
+                    m_ServerServiceIntent.PutExtra(ServerAcceptService.ExtraIpAddress, p2pInfo.GroupOwnerAddress.HostAddress);
+                    StartService(m_ServerServiceIntent);
+                    ServerDataSingleton.Instance.SetListening(true);
+                }
 
-            m_Adapter.NotifyDataSetChanged();
+                m_Views.SsidTextView.Text = groupInfo.NetworkName;
+
+                foreach (WifiP2pDevice device in groupInfo.ClientList)
+                {
+                    AddClient(device);
+                }
+
+                m_Adapter.NotifyDataSetChanged();
+            }
+            else
+            {
+                // TODO disconnection.
+                StopService(m_ServerServiceIntent);
+                ServerDataSingleton.Instance.SetListening(false);
+            }            
         }
 
         /// <summary>
@@ -160,7 +185,6 @@ namespace iDatech.WifiP2p.Poc.Activities
         /// </summary>
         override public void OnWifiP2pStateChanged(EWifiState newState)
         {
-            //throw new System.NotImplementedException();
             // Do nothing
         }
 
@@ -180,14 +204,35 @@ namespace iDatech.WifiP2p.Poc.Activities
             };
         }
 
-        public override void OnGroupInfoAvailable(WifiP2pGroup group)
+        /// <summary>
+        /// <see cref="AbstractWifiP2pActivity.OnGroupInfoAvailable(WifiP2pGroup)"/>
+        /// </summary>
+        override public void OnGroupInfoAvailable(WifiP2pGroup group)
         {
-            //throw new System.NotImplementedException();
+            foreach (WifiP2pDevice device in group.ClientList)
+            {
+                AddClient(device);
+            }
+
+            m_Adapter.NotifyDataSetChanged();
         }
 
-        public override void OnConnectionInfoAvailable(WifiP2pInfo info)
+        /// <summary>
+        /// <see cref="AbstractWifiP2pActivity.OnConnectionInfoAvailable(WifiP2pInfo)"/>
+        /// </summary>
+        override public void OnConnectionInfoAvailable(WifiP2pInfo info)
         {
-            //throw new System.NotImplementedException();
+            // Do nothing
+        }
+
+        /// <summary>
+        /// Add a new client both to the recycler view's adapter data source and to the data singleton.
+        /// </summary>
+        /// <param name="device">The device to add.</param>
+        private void AddClient(WifiP2pDevice device)
+        {
+            m_Clients.Add(device);
+            ServerDataSingleton.Instance.TryAddClient(device.DeviceAddress);
         }
 
         #endregion Methods

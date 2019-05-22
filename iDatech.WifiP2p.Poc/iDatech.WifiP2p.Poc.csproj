@@ -63,7 +63,9 @@
     <Compile Include="Activities\Views\AccessPointViews.cs" />
     <Compile Include="Activities\Views\ClientViews.cs" />
     <Compile Include="Activities\Views\ModePickerViews.cs" />
-    <Compile Include="ChatMessage.cs" />
+    <Compile Include="Parcelable\ChatMessage.cs" />
+    <Compile Include="Parcelable\ParcelableCreator.cs" />
+    <Compile Include="Parcelable\ReceivedFileInfo.cs" />
     <Compile Include="Permissions\IPermissionService.cs" />
     <Compile Include="Permissions\PermissionConstants.cs" />
     <Compile Include="Permissions\PermissionService.cs" />
@@ -74,6 +76,7 @@
     <Compile Include="WifiP2p\AsyncTasks\DiscoverAsyncTask.cs" />
     <Compile Include="WifiP2p\Enums\EMessageType.cs" />
     <Compile Include="WifiP2p\Enums\EWifiState.cs" />
+    <Compile Include="WifiP2p\Implementations\ServerDataSingleton.cs" />
     <Compile Include="WifiP2p\Implementations\WifiDirectManager.cs" />
     <Compile Include="WifiP2p\Implementations\AbstractWifiP2pActivity.cs" />
     <Compile Include="WifiP2p\Implementations\WifiP2pMessageIntent.cs" />
