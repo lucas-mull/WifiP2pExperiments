@@ -1,4 +1,5 @@
 ﻿using iDatech.WifiP2p.Poc.Parcelable;
+using iDatech.WifiP2p.Poc.WifiP2p.Enums;
 using System;
 using System.Collections.Generic;
 
@@ -45,7 +46,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
         /// <summary>
         /// The list of pending messages (messages that need to be sent but haven't been yet).
         /// </summary>
-        public Queue<ChatMessage> PendingMessages { get; private set; }
+        public Queue<Message> PendingMessages { get; private set; }
 
         /// <summary>
         /// The info of the access point we are connected to.
@@ -78,7 +79,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
         {
             SentMessages = new List<ChatMessage>();
             ReceivedMessages = new List<ChatMessage>();
-            PendingMessages = new Queue<ChatMessage>();
+            PendingMessages = new Queue<Message>();
         }
 
         #endregion Constructors
@@ -97,7 +98,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
             }
 
             ChatMessage msg = new ChatMessage(message, DeviceInfo.MacAddress);
-            PendingMessages.Enqueue(msg);
+            PendingMessages.Enqueue(new Message(EMessageType.);
         }
 
         /// <summary>
