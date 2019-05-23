@@ -19,7 +19,7 @@ using static Android.Support.V4.Widget.SwipeRefreshLayout;
 namespace iDatech.WifiP2p.Poc.Activities
 {
     [Activity(Label = "ClientActivity")]
-    public class ClientActivity : AbstractWifiP2pActivity, IOnRefreshListener
+    public class ClientActivity : WifiP2pActivity, IOnRefreshListener
     {
         #region Constants
 
@@ -140,7 +140,7 @@ namespace iDatech.WifiP2p.Poc.Activities
         }
 
         /// <summary>
-        /// <see cref="AbstractWifiP2pActivity.OnPeersAvailable(WifiP2pDeviceList)"/>
+        /// <see cref="WifiP2pActivity.OnPeersAvailable(WifiP2pDeviceList)"/>
         /// </summary>
         override public void OnPeersAvailable(WifiP2pDeviceList peers)
         {
@@ -157,7 +157,7 @@ namespace iDatech.WifiP2p.Poc.Activities
         }
 
         /// <summary>
-        /// <see cref="AbstractWifiP2pActivity.OnThisDeviceChanged(WifiP2pDevice)"/>
+        /// <see cref="WifiP2pActivity.OnThisDeviceChanged(WifiP2pDevice)"/>
         /// </summary>
         override public void OnThisDeviceChanged(WifiP2pDevice deviceDetails)
         {
@@ -165,7 +165,7 @@ namespace iDatech.WifiP2p.Poc.Activities
         }
 
         /// <summary>
-        /// <see cref="AbstractWifiP2pActivity.OnWifiP2pConnectionChanged(NetworkInfo, WifiP2pInfo, WifiP2pGroup)"/>
+        /// <see cref="WifiP2pActivity.OnWifiP2pConnectionChanged(NetworkInfo, WifiP2pInfo, WifiP2pGroup)"/>
         /// </summary>
         override public void OnWifiP2pConnectionChanged(NetworkInfo networkInfo, WifiP2pInfo p2pInfo, WifiP2pGroup groupInfo)
         {
@@ -173,7 +173,7 @@ namespace iDatech.WifiP2p.Poc.Activities
         }
 
         /// <summary>
-        /// <see cref="AbstractWifiP2pActivity.OnWifiP2pStateChanged(EWifiState)"/>
+        /// <see cref="WifiP2pActivity.OnWifiP2pStateChanged(EWifiState)"/>
         /// </summary>
         override public void OnWifiP2pStateChanged(EWifiState newState)
         {
@@ -227,7 +227,7 @@ namespace iDatech.WifiP2p.Poc.Activities
         }
 
         /// <summary>
-        /// <see cref="AbstractWifiP2pActivity.OnGroupInfoAvailable(WifiP2pGroup)"/>
+        /// <see cref="WifiP2pActivity.OnGroupInfoAvailable(WifiP2pGroup)"/>
         /// </summary>
         override public void OnGroupInfoAvailable(WifiP2pGroup group)
         {
@@ -235,7 +235,7 @@ namespace iDatech.WifiP2p.Poc.Activities
         }
 
         /// <summary>
-        /// <see cref="AbstractWifiP2pActivity.OnConnectionInfoAvailable(WifiP2pInfo)"/>
+        /// <see cref="WifiP2pActivity.OnConnectionInfoAvailable(WifiP2pInfo)"/>
         /// </summary>
         override public void OnConnectionInfoAvailable(WifiP2pInfo info)
         {

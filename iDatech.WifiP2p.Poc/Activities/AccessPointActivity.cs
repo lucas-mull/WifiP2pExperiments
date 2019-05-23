@@ -19,7 +19,7 @@ using System.Collections.Generic;
 namespace iDatech.WifiP2p.Poc.Activities
 {
     [Activity(Label = "AccessPointActivity")]
-    public class AccessPointActivity : AbstractWifiP2pActivity
+    public class AccessPointActivity : WifiP2pActivity
     {
         #region Instance variables
 
@@ -47,11 +47,6 @@ namespace iDatech.WifiP2p.Poc.Activities
         /// The permission service.
         /// </summary>
         private IPermissionService m_PermissionService;
-
-        /// <summary>
-        /// The intent used to start the <see cref="ServerAcceptService"/>.
-        /// </summary>
-        private Intent m_ServerServiceIntent;
 
         #endregion Instance variables
 
@@ -87,8 +82,6 @@ namespace iDatech.WifiP2p.Poc.Activities
                     Toast.MakeText(this, "Groupe créé avec succès !", ToastLength.Short).Show();
                 }));
             }
-
-            m_ServerServiceIntent = new Intent(this, typeof(ServerAcceptService));
         }
 
         /// <summary>
@@ -156,12 +149,6 @@ namespace iDatech.WifiP2p.Poc.Activities
         {
             if (networkInfo.IsConnected)
             {
-                if (!ServerDataSingleton.Instance.IsListening)
-                {
-                    m_ServerServiceIntent.PutExtra(ServerAcceptService.ExtraIpAddress, p2pInfo.GroupOwnerAddress.HostAddress);
-                    StartService(m_ServerServiceIntent);
-                    ServerDataSingleton.Instance.SetListening(true);
-                }
 
                 m_Views.SsidTextView.Text = groupInfo.NetworkName;
 
@@ -176,7 +163,7 @@ namespace iDatech.WifiP2p.Poc.Activities
             {
                 // TODO disconnection.
                 StopService(m_ServerServiceIntent);
-                ServerDataSingleton.Instance.SetListening(false);
+                AccessPoint.Instance.StartListening(false);
             }            
         }
 
@@ -205,7 +192,7 @@ namespace iDatech.WifiP2p.Poc.Activities
         }
 
         /// <summary>
-        /// <see cref="AbstractWifiP2pActivity.OnGroupInfoAvailable(WifiP2pGroup)"/>
+        /// <see cref="WifiP2pActivity.OnGroupInfoAvailable(WifiP2pGroup)"/>
         /// </summary>
         override public void OnGroupInfoAvailable(WifiP2pGroup group)
         {
@@ -218,7 +205,7 @@ namespace iDatech.WifiP2p.Poc.Activities
         }
 
         /// <summary>
-        /// <see cref="AbstractWifiP2pActivity.OnConnectionInfoAvailable(WifiP2pInfo)"/>
+        /// <see cref="WifiP2pActivity.OnConnectionInfoAvailable(WifiP2pInfo)"/>
         /// </summary>
         override public void OnConnectionInfoAvailable(WifiP2pInfo info)
         {
@@ -232,7 +219,7 @@ namespace iDatech.WifiP2p.Poc.Activities
         private void AddClient(WifiP2pDevice device)
         {
             m_Clients.Add(device);
-            ServerDataSingleton.Instance.TryAddClient(device.DeviceAddress);
+            AccessPoint.Instance.TryAddClient(device.DeviceAddress);
         }
 
         #endregion Methods

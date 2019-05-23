@@ -63,9 +63,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p
                 long objLength = BitConverter.ToInt64(buffer, 0);
                 List<byte> objBytes = new List<byte>();
                 int totalBytesRead = 0;
-                string intentAction = messageType == EMessageType.SendData
-                    ? WifiP2pMessageIntent.ActionReceivedDataProgress
-                    : WifiP2pMessageIntent.ActionReceivedFileProgress;
+                string intentAction = messageType.GetIntentAction(false);
 
                 buffer = new byte[Step];
                 while ((bytesRead = clientSocket.Receive(buffer, Step, SocketFlags.None)) > 0)
@@ -88,6 +86,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p
                 switch (messageType)
                 {
                     case EMessageType.SendData:
+                    case EMessageType.PingServer:
                         // Deserialize the object.
                         var formatter = new BinaryFormatter();
                         data = formatter.Deserialize(new MemoryStream(objBytes.ToArray())) as IParcelable;
@@ -101,7 +100,11 @@ namespace iDatech.WifiP2p.Poc.WifiP2p
                         break;
                     default:
                         throw new NotSupportedException($"Message {messageType} not supported");
-                }                
+                }
+
+                // Broadcast completion
+                doneIntent = new WifiP2pMessageIntent<IParcelable>(intentAction, 1, true, data);
+                context.SendBroadcast(doneIntent);
 
                 return new Message(messageType)
                 {
@@ -181,7 +184,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p
             buffer = BitConverter.GetBytes(Length);
             clientSocket.SendBufferSize = buffer.Length;
             clientSocket.Send(buffer);
-            
+
             using (MemoryStream ms = new MemoryStream())
             {
                 formatter.Serialize(ms, obj);

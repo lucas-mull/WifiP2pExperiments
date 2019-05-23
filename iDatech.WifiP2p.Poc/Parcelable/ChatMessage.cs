@@ -60,7 +60,8 @@ namespace iDatech.WifiP2p.Poc.Parcelable
         /// Default constructor initializing every property.
         /// </summary>
         /// <param name="message">The message.</param>
-        public ChatMessage(string message)
+        /// <param name="senderAddress">The mac address of the sender.</param>
+        public ChatMessage(string message, string senderAddress)
         {
             Message = message;
         }

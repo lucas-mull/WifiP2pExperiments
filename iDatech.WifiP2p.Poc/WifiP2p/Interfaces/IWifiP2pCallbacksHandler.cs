@@ -1,7 +1,6 @@
 ﻿using Android.Net;
 using Android.Net.Wifi.P2p;
 using iDatech.WifiP2p.Poc.WifiP2p.Enums;
-using System.IO;
 
 namespace iDatech.WifiP2p.Poc.WifiP2p.Interfaces
 {
@@ -59,29 +58,6 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Interfaces
         /// <param name="messageType">The type of message that was sent with the data. Can be used to cast the data accordingly.</param>
         /// <param name="data">The data that has been uploaded.</param>
         void OnDataUploaded(EMessageType messageType, object data);
-
-        /// <summary>
-        /// Called when a file download is in progress.
-        /// </summary>
-        /// <param name="progress">The progress value.</param>
-        void OnFileDownloadProgressChanged(int progress);
-
-        /// <summary>
-        /// Called when a file download has been completed.
-        /// </summary>
-        /// <param name="fileStream">The downloaded file's stream.</param>
-        void OnFileDownloaded(Stream fileStream);
-
-        /// <summary>
-        /// Called when a file upload is in progress.
-        /// </summary>
-        /// <param name="progress">The progress value.</param>
-        void OnFileUploadProgressChanged(int progress);
-
-        /// <summary>
-        /// Called when a file upload has been completed.
-        /// </summary>
-        void OnFileUploaded();
 
         #endregion Methods
     }

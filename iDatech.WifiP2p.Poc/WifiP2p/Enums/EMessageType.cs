@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using iDatech.WifiP2p.Poc.WifiP2p.Implementations;
+using System;
+using System.Linq;
 
 namespace iDatech.WifiP2p.Poc.WifiP2p.Enums
 {
@@ -48,7 +50,29 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Enums
         /// <returns><c>true</c> if the message type comes with data, <c>false</c> otherwise.</returns>
         static public bool IsCarryingData(this EMessageType messageType)
         {
-            return new[] { EMessageType.SendData, EMessageType.SendFile }.Contains(messageType);
+            return new[] { EMessageType.SendData, EMessageType.SendFile, EMessageType.PingServer }.Contains(messageType);
+        }
+
+        /// <summary>
+        /// Extension method to get the intent action associated with a message type.
+        /// </summary>
+        /// <param name="messageType">The message type.</param>
+        /// <param name="isSending"><c>true</c> for sending intent, <c>false</c> for receiving intent.</param>
+        /// <returns>The intent action for the specified <paramref name="messageType"/></returns>
+        static public string GetIntentAction(this EMessageType messageType, bool isSending)
+        {
+            switch(messageType)
+            {
+                case EMessageType.PingServer:
+                case EMessageType.SendData:
+                    return isSending ? WifiP2pMessageIntent.ActionSendDataProgress : WifiP2pMessageIntent.ActionReceivedDataProgress;
+
+                case EMessageType.RequestFile:
+                    return isSending ? WifiP2pMessageIntent.ActionSendFileProgress : WifiP2pMessageIntent.ActionReceivedFileProgress;
+
+                default:
+                    throw new NotSupportedException($"The message type {messageType} is not associated with any intent action.");
+            }
         }
 
         #endregion Static methods

@@ -27,7 +27,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
         /// <summary>
         /// The handler for all the callbacks.
         /// </summary>
-        readonly private AbstractWifiP2pActivity m_CallbackHandler;
+        readonly private WifiP2pActivity m_CallbackHandler;
 
         #endregion Instance variables
 
@@ -39,7 +39,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
         /// <param name="wifiP2pManager">The <see cref="WifiP2pManager"/> instance.</param>
         /// <param name="channel">The used channel.</param>
         /// <param name="callbackHandler">The global callback handler for wifi P2P signals.</param>
-        public WifiP2pBroadcastReceiver(WifiP2pManager wifiP2pManager, Channel channel, AbstractWifiP2pActivity callbackHandler)
+        public WifiP2pBroadcastReceiver(WifiP2pManager wifiP2pManager, Channel channel, WifiP2pActivity callbackHandler)
         {
             m_WifiP2pManager = wifiP2pManager ?? throw new ArgumentNullException(nameof(wifiP2pManager));
             m_Channel = channel ?? throw new ArgumentNullException(nameof(channel));
