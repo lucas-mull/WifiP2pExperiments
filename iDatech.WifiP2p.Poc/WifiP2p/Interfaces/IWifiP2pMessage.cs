@@ -24,7 +24,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Interfaces
         /// <summary>
         /// The object included in the message.
         /// </summary>
-        IParcelable Object { get; }
+        IParcelable Data { get; }
 
         #endregion Properties
     }

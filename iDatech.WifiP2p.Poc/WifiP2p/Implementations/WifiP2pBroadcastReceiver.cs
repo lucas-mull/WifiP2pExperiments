@@ -53,36 +53,66 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
         /// </summary>
         override public void OnReceive(Context context, Intent intent)
         {
-            switch (intent.Action)
+            // Filter Messages intents
+            if (intent is WifiP2pMessageIntent messageIntent)
             {
-                case WifiP2pConnectionChangedAction:
-                    NetworkInfo networkInfo = (NetworkInfo)intent.GetParcelableExtra(ExtraNetworkInfo);
-                    WifiP2pInfo p2pInfo = (WifiP2pInfo)intent.GetParcelableExtra(ExtraWifiP2pInfo);
-                    WifiP2pGroup groupInfo = (WifiP2pGroup)intent.GetParcelableExtra(ExtraWifiP2pGroup);
-                    m_CallbackHandler.OnWifiP2pConnectionChanged(networkInfo, p2pInfo, groupInfo);
-                    break;
+                // Load extra data from the intent.
+                messageIntent.Load();
+                switch(messageIntent.Action)
+                {
+                    case WifiP2pMessageIntent.ActionMessageReceivedProgress:
+                        if (messageIntent.IsCompleted)
+                        {
+                            m_CallbackHandler.OnMessageReceived(messageIntent.Message);
+                        }
+                        else
+                        {
+                            m_CallbackHandler.OnMessageReceivedProgressChanged(messageIntent.Message.MessageType, messageIntent.Progress);
+                        }
+                        break;
 
-                case WifiP2pPeersChangedAction:
-                    WifiP2pDeviceList peers = (WifiP2pDeviceList)intent.GetParcelableExtra(ExtraP2pDeviceList);
-                    m_CallbackHandler.OnPeersAvailable(peers);
-                    break;
-
-                case WifiP2pStateChangedAction:
-                    EWifiState wifiState = (EWifiState)intent.GetIntExtra(ExtraWifiState, 0);
-                    m_CallbackHandler.OnWifiP2pStateChanged(wifiState);
-                    break;
-
-                case WifiP2pThisDeviceChangedAction:
-                    WifiP2pDevice deviceDetails = (WifiP2pDevice)intent.GetParcelableExtra(ExtraWifiP2pDevice);
-                    m_CallbackHandler.OnThisDeviceChanged(deviceDetails);
-                    break;
-
-                case WifiP2pMessageIntent.ActionReceivedDataProgress:
-                    break;
-
-                default:
-                    throw new NotSupportedException($"The action {intent.Action} is not handled by this receiver.");
+                    case WifiP2pMessageIntent.ActionMessageSentProgress:
+                        if (messageIntent.IsCompleted)
+                        {
+                            m_CallbackHandler.OnMessageSent(messageIntent.Message);
+                        }
+                        else
+                        {
+                            m_CallbackHandler.OnMessageSendingProgressChanged(messageIntent.Message, messageIntent.Progress);
+                        }
+                        break;
+                }
             }
+            else
+            {
+                switch (intent.Action)
+                {
+                    case WifiP2pConnectionChangedAction:
+                        NetworkInfo networkInfo = (NetworkInfo)intent.GetParcelableExtra(ExtraNetworkInfo);
+                        WifiP2pInfo p2pInfo = (WifiP2pInfo)intent.GetParcelableExtra(ExtraWifiP2pInfo);
+                        WifiP2pGroup groupInfo = (WifiP2pGroup)intent.GetParcelableExtra(ExtraWifiP2pGroup);
+                        m_CallbackHandler.OnWifiP2pConnectionChanged(networkInfo, p2pInfo, groupInfo);
+                        break;
+
+                    case WifiP2pPeersChangedAction:
+                        WifiP2pDeviceList peers = (WifiP2pDeviceList)intent.GetParcelableExtra(ExtraP2pDeviceList);
+                        m_CallbackHandler.OnPeersAvailable(peers);
+                        break;
+
+                    case WifiP2pStateChangedAction:
+                        EWifiState wifiState = (EWifiState)intent.GetIntExtra(ExtraWifiState, 0);
+                        m_CallbackHandler.OnWifiP2pStateChanged(wifiState);
+                        break;
+
+                    case WifiP2pThisDeviceChangedAction:
+                        WifiP2pDevice deviceDetails = (WifiP2pDevice)intent.GetParcelableExtra(ExtraWifiP2pDevice);
+                        m_CallbackHandler.OnThisDeviceChanged(deviceDetails);
+                        break;                    
+
+                    default:
+                        throw new NotSupportedException($"The action {intent.Action} is not handled by this receiver.");
+                }
+            }            
         }
     }
 }

@@ -32,32 +32,30 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Interfaces
         void OnThisDeviceChanged(WifiP2pDevice deviceDetails);
 
         /// <summary>
-        /// Called when data is being downloaded from a peer.
+        /// Called when a message is being downloaded from a peer.
         /// </summary>
-        /// <param name="progress">The current download progress.</param>
-        void OnDataDownloadProgressChanged(int progress);
+        /// <param name="message">The message type.</param>
+        /// <param name="progress">The current download progress (between 0 and 1).</param>
+        void OnMessageReceivedProgressChanged(EMessageType message, float progress);
 
         /// <summary>
-        /// Called when data download has finished.
+        /// Called when a message has been received and its data downloaded.
         /// </summary>
-        /// <param name="messageType">The type of message that was sent with the data. Can be used to cast the data accordingly.</param>
-        /// <param name="data">The data that has been downloaded.</param>
-        void OnDataDownloaded(EMessageType messageType, object data);
+        /// <param name="message">The message received.</param>
+        void OnMessageReceived(Message message);
 
         /// <summary>
-        /// Called when data is being sent to a peer.
+        /// Called when a message is being sent to a peer.
         /// </summary>
-        /// <param name="messageType">The type of message that was sent with the data. Can be used to cast the data accordingly.</param>
-        /// <param name="progress">The current upload progress.</param>
-        /// <param name="data">The data that is being sent.</param>
-        void OnDataUploadProgressChanged(EMessageType messageType, int progress, object data);
+        /// <param name="message">The message being sent.</param>
+        /// <param name="progress">The current upload progress (between 0 and 1).</param>
+        void OnMessageSendingProgressChanged(Message message, float progress);
 
         /// <summary>
-        /// Called when data upload has finished.
+        /// Called when a message has been sent.
         /// </summary>
-        /// <param name="messageType">The type of message that was sent with the data. Can be used to cast the data accordingly.</param>
-        /// <param name="data">The data that has been uploaded.</param>
-        void OnDataUploaded(EMessageType messageType, object data);
+        /// <param name="message">The message that was sent.</param>
+        void OnMessageSent(Message message);
 
         #endregion Methods
     }

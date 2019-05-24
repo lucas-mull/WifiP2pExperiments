@@ -1,18 +1,16 @@
 ﻿using Android.App;
 using Android.Content;
-using Android.Net.Wifi.P2p;
-using Android.OS;
-using iDatech.WifiP2p.Poc.Parcelable;
-using iDatech.WifiP2p.Poc.WifiP2p.Enums;
 using iDatech.WifiP2p.Poc.WifiP2p.Implementations;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
 namespace iDatech.WifiP2p.Poc.WifiP2p.Services
 {
+    /// <summary>
+    /// The background service responsible for listening to incoming client connections and messages.
+    /// </summary>
     [Service]
     sealed public class ServerListeningService : IntentService
     {
@@ -35,7 +33,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Services
         /// <summary>
         /// The lock
         /// </summary>
-        private object m_Lock;
+        readonly private object m_Lock = new object();
 
         /// <summary>
         /// The server socket listening to incoming connections.
@@ -49,9 +47,47 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Services
 
         #endregion Instance variables
 
+        #region Properties
+
+        /// <summary>
+        /// Fetch the amount of connected client sockets at this time.
+        /// </summary>
+        public int ActiveSocketsCount => m_CurrentlyActiveSockets;
+
+        #endregion Properties
+
         #region Methods
 
+        /// <summary>
+        /// <see cref="IntentService.OnHandleIntent(Intent)"/>
+        /// </summary>
         override protected void OnHandleIntent(Intent intent)
+        {
+            // Only allow one instance of the service to be running at once.
+            if (AccessPoint.Instance.IsListening)
+            {
+                StopSelf();
+            }
+            else
+            {
+                DoBackgroundWork(intent);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IntentService.OnDestroy"/>
+        /// </summary>
+        override public void OnDestroy()
+        {
+            base.OnDestroy();
+            m_ServerSocket.Close();
+        }
+
+        /// <summary>
+        /// Do the background work.
+        /// </summary>
+        /// <param name="intent">The intent passed on from <see cref="OnHandleIntent(Intent)"/></param>
+        private void DoBackgroundWork(Intent intent)
         {
             // Fetch the IP address and port from the intent extras.
             string targetAddress = intent.GetStringExtra(ExtraIpAddress) ?? throw new ArgumentException($"The intent did not contain the following parameter : {ExtraIpAddress}", nameof(intent));
@@ -84,15 +120,6 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Services
         }
 
         /// <summary>
-        /// <see cref="IntentService.OnDestroy"/>
-        /// </summary>
-        override public void OnDestroy()
-        {
-            base.OnDestroy();
-            m_ServerSocket.Close();
-        }
-
-        /// <summary>
         /// Handle a client's message.
         /// </summary>
         /// <param name="clientSocket">The client socket.</param>
@@ -104,17 +131,13 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Services
             }
 
             // Receive the full message from the client.
-            Message message = Message.Receive(this, clientSocket);
+            Message.Receive(this, clientSocket);
 
-            if (!message.IsCarryingData)
-            {
-                
-            }
-
+            // Release the connection
             clientSocket.Close();
 
             // Release the socket.
-            lock(m_Lock)
+            lock (m_Lock)
             {
                 m_CurrentlyActiveSockets--;
             }

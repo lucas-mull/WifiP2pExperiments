@@ -65,10 +65,8 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Enums
             {
                 case EMessageType.PingServer:
                 case EMessageType.SendData:
-                    return isSending ? WifiP2pMessageIntent.ActionSendDataProgress : WifiP2pMessageIntent.ActionReceivedDataProgress;
-
-                case EMessageType.RequestFile:
-                    return isSending ? WifiP2pMessageIntent.ActionSendFileProgress : WifiP2pMessageIntent.ActionReceivedFileProgress;
+                case EMessageType.SendFile:
+                    return isSending ? WifiP2pMessageIntent.ActionMessageSentProgress : WifiP2pMessageIntent.ActionMessageReceivedProgress;
 
                 default:
                     throw new NotSupportedException($"The message type {messageType} is not associated with any intent action.");

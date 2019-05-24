@@ -7,7 +7,6 @@ using Android.Support.V7.App;
 using iDatech.WifiP2p.Poc.Parcelable;
 using iDatech.WifiP2p.Poc.WifiP2p.Enums;
 using iDatech.WifiP2p.Poc.WifiP2p.Interfaces;
-using System;
 using static Android.Net.Wifi.P2p.WifiP2pManager;
 
 namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
@@ -117,26 +116,15 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
             WifiP2pManager.RequestConnectionInfo(WifiP2pChannel, this);
         }
 
-        ///// <summary>
-        ///// Start another <see cref="AbstractWifiP2pActivity"/> and pass in the current Wifi P2P parameters to avoid resetting an existing connection.
-        ///// </summary>
-        ///// <param name="activity">The activity to start</param>
-        //protected void StartWifi2pActivity(AbstractWifiP2pActivity activity) 
-        //{
-        //    Intent intent = new Intent(this, activity.GetType());
-        //    Bundle args = new Bundle();
-        //    args.Put
-        //}
-
         /// <summary>
         /// <see cref="IPeerListListener.OnPeersAvailable(WifiP2pDeviceList)"/>
         /// </summary>
-        abstract public void OnPeersAvailable(WifiP2pDeviceList peers);
+        virtual public void OnPeersAvailable(WifiP2pDeviceList peers) { }
 
         /// <summary>
         /// <see cref="IWifiP2pCallbacksHandler.OnThisDeviceChanged(WifiP2pDevice)"/>
         /// </summary>
-        abstract public void OnThisDeviceChanged(WifiP2pDevice deviceDetails);
+        virtual public void OnThisDeviceChanged(WifiP2pDevice deviceDetails) { }
 
         /// <summary>
         /// <see cref="IWifiP2pCallbacksHandler.OnWifiP2pConnectionChanged(NetworkInfo, WifiP2pInfo, WifiP2pGroup)"/>
@@ -149,11 +137,16 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
                 {
                     IsServer = true;
                     AccessPoint.Instance.StartListening(this, p2pInfo.GroupOwnerAddress.HostAddress, 8898);
+                    foreach(WifiP2pDevice device in groupInfo.ClientList)
+                    {
+                        AccessPoint.Instance.TryAddClient(new DeviceInfo(device.DeviceName, device.DeviceAddress, p2pInfo.GroupOwnerAddress.HostAddress));
+                    }
                 }
                 else
                 {
                     IsServer = false;
                     Client.Instance.SetConnected(new DeviceInfo(groupInfo.Owner.DeviceName, groupInfo.Owner.DeviceAddress, p2pInfo.GroupOwnerAddress.HostAddress));
+                    Client.Instance.StartSending(this, p2pInfo.GroupOwnerAddress.HostAddress, 8898);
                 }
             }
             else
@@ -162,23 +155,47 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
                 {
                     AccessPoint.Instance.StopListening(this);
                 }
+                else
+                {
+                    Client.Instance.StopSending(this);
+                }
             }
         }
 
         /// <summary>
         /// <see cref="IWifiP2pCallbacksHandler.OnWifiP2pStateChanged(EWifiState)"/>
         /// </summary>
-        abstract public void OnWifiP2pStateChanged(EWifiState newState);
+        virtual public void OnWifiP2pStateChanged(EWifiState newState) { }
 
         /// <summary>
         /// <see cref="IGroupInfoListener.OnGroupInfoAvailable(WifiP2pGroup)"/>
         /// </summary>
-        abstract public void OnGroupInfoAvailable(WifiP2pGroup group);
+        virtual public void OnGroupInfoAvailable(WifiP2pGroup group) { }
 
         /// <summary>
         /// <see cref="IConnectionInfoListener.OnConnectionInfoAvailable(WifiP2pInfo)"/>
         /// </summary>
-        abstract public void OnConnectionInfoAvailable(WifiP2pInfo info);
+        virtual public void OnConnectionInfoAvailable(WifiP2pInfo info) { }
+
+        /// <summary>
+        /// <see cref="IWifiP2pCallbacksHandler.OnMessageReceivedProgressChanged(EMessageType, int)"/>
+        /// </summary>
+        abstract public void OnMessageReceivedProgressChanged(EMessageType message, float progress);
+
+        /// <summary>
+        /// <see cref="IWifiP2pCallbacksHandler.OnMessageReceived(Message)"/>
+        /// </summary>
+        abstract public void OnMessageReceived(Message message);
+
+        /// <summary>
+        /// <see cref="IWifiP2pCallbacksHandler.OnMessageSendingProgressChanged(Message, float)"/>
+        /// </summary>
+        abstract public void OnMessageSendingProgressChanged(Message message, float progress);
+
+        /// <summary>
+        /// <see cref="IWifiP2pCallbacksHandler.OnMessageSent(Message)"/>
+        /// </summary>
+        abstract public void OnMessageSent(Message message);
 
         #endregion Methods
     }

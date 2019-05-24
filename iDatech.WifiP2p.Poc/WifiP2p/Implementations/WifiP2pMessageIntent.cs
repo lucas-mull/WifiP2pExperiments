@@ -1,5 +1,6 @@
 ﻿using Android.Content;
 using Android.OS;
+using System;
 
 namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
 {
@@ -8,24 +9,14 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
         #region Constants
 
         /// <summary>
-        /// Action meaning a file download is in progress. Fetch the current progress (out of a 100) in intent extras.
-        /// </summary>
-        public const string ActionReceivedFileProgress = "RECEIVED_FILE_PROGRESS";
-
-        /// <summary>
         /// Action meaning data transfer (receiving) is in progress. Fetch the current progress (out of a 100) in intent extras.
         /// </summary>
-        public const string ActionReceivedDataProgress = "RECEIVED_DATA_PROGRESS";
-
-        /// <summary>
-        /// Action meaning a file is being set from the server. Fetch the current progress (out of a 100) in intent extras.
-        /// </summary>
-        public const string ActionSendFileProgress = "SEND_FILE_PROGRESS";
+        public const string ActionMessageReceivedProgress = "RECEIVED_DATA_PROGRESS";
 
         /// <summary>
         /// Action meaning data is being transferred (sent). Fetch the current progress (out of a 100) in intent extras.
         /// </summary>
-        public const string ActionSendDataProgress = "SEND_DATA_PROGRESS";
+        public const string ActionMessageSentProgress = "SEND_DATA_PROGRESS";
 
         /// <summary>
         /// The extra param to fetch in the intent to get the progress (integer).
@@ -40,14 +31,34 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
         /// <summary>
         /// The extra param holding the extra bundle.
         /// </summary>
-        public const string ExtraData = "EXTRA_DATA";
+        public const string ExtraMessage = "EXTRA_MESSAGE";
 
         /// <summary>
-        /// The extra param holding the extra data object.
+        /// The extra param holding the extra message object.
         /// </summary>
-        public const string ExtraDataObject = "EXTRA_DATA_OBJECT";
+        public const string ExtraMessageObject = "EXTRA_MESSAGE_OBJECT";
 
         #endregion Constants
+
+        #region Properties
+
+        /// <summary>
+        /// The progress state between 0 and 1.
+        /// </summary>
+        /// <remarks>Progress being set to 1 does not necessarly mean that the operation is completed. Check <see cref="IsCompleted"/> for that.</remarks>
+        public float Progress { get; private set; }
+
+        /// <summary>
+        /// Whether or not the operation is completed.
+        /// </summary>
+        public bool IsCompleted { get; private set; }
+
+        /// <summary>
+        /// The message received / sent.
+        /// </summary>
+        public Message Message { get; private set; }
+
+        #endregion Properties
 
         #region Constructors
 
@@ -56,30 +67,52 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="progress">The progress.</param>
-        /// <param name="isCompleted">Whether or not the operation is completed.</param>
-        public WifiP2pMessageIntent(string action, float progress, bool isCompleted) : base(action)
+        /// <param name="isCompleted">Whether or not the operation is completed. Only if this is <c>true</c> can the object be retrieved safely from the message.</param>
+        /// <param name="message">The message object.</param>
+        public WifiP2pMessageIntent(string action, float progress, bool isCompleted, Message message) : base(action)
         {
-            this.PutExtra(ExtraProgress, progress);
-            this.PutExtra(ExtraIsOperationCompleted, isCompleted);            
-        }
-
-        #endregion Constructors
-    }
-
-    public class WifiP2pMessageIntent<TData> : WifiP2pMessageIntent where TData : class, IParcelable
-    {
-        #region Constructors
-
-        public WifiP2pMessageIntent(string action, float progress, bool isCompleted, TData data = null) : base(action, progress, isCompleted)
-        {
-            if (data != null)
+            if (progress < 0 || progress > 1)
             {
-                Bundle bundle = new Bundle();
-                bundle.PutParcelable(ExtraDataObject, data);
-                this.PutExtra(ExtraData, bundle);
+                throw new ArgumentException($"The progress must be a value between 0 and 1 - {progress} is not a valid value.", nameof(progress));
             }
+
+            Progress = progress;
+            IsCompleted = isCompleted;
+            Message = message ?? throw new ArgumentException(nameof(message));
+
+            // Load intent with the data.
+            PutAll();
         }
 
         #endregion Constructors
+
+        #region Methods
+
+        /// <summary>
+        /// Put all the data in the intent.
+        /// </summary>
+        private void PutAll()
+        {
+            this.PutExtra(ExtraProgress, Progress);
+            this.PutExtra(ExtraIsOperationCompleted, IsCompleted);
+
+            Bundle bundle = new Bundle();
+            bundle.PutParcelable(ExtraMessageObject, Message);
+            this.PutExtra(ExtraMessage, bundle);
+        }
+
+        /// <summary>
+        /// Load the data from the intent into the properties.
+        /// </summary>
+        public void Load()
+        {
+            Progress = this.GetFloatExtra(ExtraProgress, 0);
+            IsCompleted = this.GetBooleanExtra(ExtraIsOperationCompleted, false);
+
+            Bundle bundle = this.GetBundleExtra(ExtraMessage);
+            Message = bundle.GetParcelable(ExtraMessageObject) as Message;
+        }
+
+        #endregion Methods
     }
 }

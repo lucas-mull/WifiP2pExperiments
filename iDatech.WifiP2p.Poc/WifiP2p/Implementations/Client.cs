@@ -1,5 +1,6 @@
-﻿using iDatech.WifiP2p.Poc.Parcelable;
-using iDatech.WifiP2p.Poc.WifiP2p.Enums;
+﻿using Android.Content;
+using iDatech.WifiP2p.Poc.Parcelable;
+using iDatech.WifiP2p.Poc.WifiP2p.Services;
 using System;
 using System.Collections.Generic;
 
@@ -30,6 +31,15 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
         }
 
         #endregion Static constructor
+
+        #region Instance variables
+
+        /// <summary>
+        /// The intent used to start the <see cref="ClientConnectingService"/>.
+        /// </summary>
+        private Intent m_ClientServiceIntent;
+
+        #endregion Instance variables
 
         #region Properties
 
@@ -68,6 +78,11 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
         /// </summary>
         public bool HasPinged { get; private set; }
 
+        /// <summary>
+        /// Is the <see cref="ClientConnectingService"/> currently started ?
+        /// </summary>
+        public bool IsSending { get; private set; }
+
         #endregion Properties
 
         #region Constructors
@@ -90,15 +105,14 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
         /// Push a message to be sent.
         /// </summary>
         /// <param name="message">The message.</param>
-        public void PushMessage(string message)
+        public void PushMessage(Message message)
         {
-            if (string.IsNullOrWhiteSpace(message))
+            if (message == null)
             {
                 throw new ArgumentNullException(nameof(message));
             }
 
-            ChatMessage msg = new ChatMessage(message, DeviceInfo.MacAddress);
-            PendingMessages.Enqueue(new Message(EMessageType.);
+            PendingMessages.Enqueue(message);
         }
 
         /// <summary>
@@ -108,6 +122,39 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
         public void SetConnected(DeviceInfo accessPoint)
         {
             AccessPoint = accessPoint;
+        }
+
+        /// <summary>
+        /// Start the background service that sends pending messages to the server periodically.
+        /// </summary>
+        /// <param name="context">The context(used to start the sending service).</param>
+        /// <param name="serverAddress">The server's address.</param>
+        /// <param name="port">The port to connect to.</param>
+        public void StartSending(Context context, string serverAddress, int port)
+        {
+            if (!IsSending)
+            {
+                m_ClientServiceIntent = new Intent(context, typeof(ClientConnectingService));
+                m_ClientServiceIntent.PutExtra(ClientConnectingService.ExtraIpAddress, serverAddress);
+                m_ClientServiceIntent.PutExtra(ClientConnectingService.ExtraConnectingPort, port);
+
+                context.StartService(m_ClientServiceIntent);
+                IsSending = true;
+            }
+        }
+
+        /// <summary>
+        /// Stop listening to incoming client connections.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        public void StopSending(Context context)
+        {
+            if (IsSending)
+            {
+                context.StopService(m_ClientServiceIntent);
+
+                IsSending = false;
+            }
         }
 
         /// <summary>

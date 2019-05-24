@@ -1,9 +1,11 @@
 ﻿using Android.Content;
 using Android.OS;
+using Android.Runtime;
 using iDatech.WifiP2p.Poc.Parcelable;
 using iDatech.WifiP2p.Poc.WifiP2p.Enums;
 using iDatech.WifiP2p.Poc.WifiP2p.Implementations;
 using iDatech.WifiP2p.Poc.WifiP2p.Interfaces;
+using Java.Interop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +17,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p
     /// <summary>
     /// A message sent over the network.
     /// </summary>
-    sealed public class Message : IWifiP2pMessage
+    sealed public class Message : Java.Lang.Object, IWifiP2pMessage, IParcelable
     {
         #region Constants
 
@@ -26,6 +28,15 @@ namespace iDatech.WifiP2p.Poc.WifiP2p
 
         #endregion Constants
 
+        #region Static variables
+
+        /// <summary>
+        /// The parcelable creator.
+        /// </summary>
+        static private readonly ParcelableCreator<Message> s_Creator = new ParcelableCreator<Message>(FromParcel);
+
+        #endregion Static variables
+
         #region Static methods
 
         /// <summary>
@@ -33,8 +44,7 @@ namespace iDatech.WifiP2p.Poc.WifiP2p
         /// </summary>
         /// <param name="context">The context used to send broadcasts on the progress.</param>
         /// <param name="clientSocket">The client socket.</param>
-        /// <returns>The received message.</returns>
-        static public Message Receive(Context context, Socket clientSocket)
+        static public void Receive(Context context, Socket clientSocket)
         {
             // Fetch the message type (first byte)
             byte[] buffer = new byte[1];
@@ -48,73 +58,85 @@ namespace iDatech.WifiP2p.Poc.WifiP2p
             // Read message type
             EMessageType messageType = (EMessageType)buffer[0];
 
-            // If the specified message is supposed to carry data, read it.  
-            if (messageType.IsCarryingData())
+            Message msg = new Message(messageType);
+
+            // Stop reading if the message is not carrying any data.
+            if (!messageType.IsCarryingData())
             {
-                // Read object size (Int64 -> 8 bytes).
-                buffer = new byte[8];
-                bytesRead = clientSocket.Receive(buffer, 4, SocketFlags.None);
-
-                if (bytesRead != 8)
-                {
-                    throw new InvalidOperationException($"The size of the object could not be read.");
-                }
-
-                long objLength = BitConverter.ToInt64(buffer, 0);
-                List<byte> objBytes = new List<byte>();
-                int totalBytesRead = 0;
-                string intentAction = messageType.GetIntentAction(false);
-
-                buffer = new byte[Step];
-                while ((bytesRead = clientSocket.Receive(buffer, Step, SocketFlags.None)) > 0)
-                {
-                    totalBytesRead += bytesRead;
-                    objBytes.AddRange(buffer);
-
-                    // Broadcast progress
-                    Intent progressIntent = new WifiP2pMessageIntent(intentAction, (float)totalBytesRead / objLength, false);
-                    context.SendBroadcast(progressIntent);
-                }
-
-                if (totalBytesRead != objLength)
-                {
-                    throw new InvalidOperationException($"Error while reading the object : {bytesRead} bytes read but object should be {objLength} bytes long.");
-                }
-
-                Intent doneIntent;
-                IParcelable data = null;
-                switch (messageType)
-                {
-                    case EMessageType.SendData:
-                    case EMessageType.PingServer:
-                        // Deserialize the object.
-                        var formatter = new BinaryFormatter();
-                        data = formatter.Deserialize(new MemoryStream(objBytes.ToArray())) as IParcelable;
-                        break;
-                    case EMessageType.SendFile:
-                        // Write the file temporarily on the phone's internal storage.
-                        string filePath = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Resources), "received_file.csv");
-                        File.WriteAllBytes(filePath, objBytes.ToArray());
-
-                        data = new ReceivedFileInfo(filePath, objBytes.ToArray());
-                        break;
-                    default:
-                        throw new NotSupportedException($"Message {messageType} not supported");
-                }
-
-                // Broadcast completion
-                doneIntent = new WifiP2pMessageIntent<IParcelable>(intentAction, 1, true, data);
-                context.SendBroadcast(doneIntent);
-
-                return new Message(messageType)
-                {
-                    Length = objLength,
-                    Object = data
-                };
+                return;
             }
 
-            return new Message(messageType);
+            // Otherwise read it
+            // Read object size (Int64 -> 8 bytes).
+            buffer = new byte[8];
+            bytesRead = clientSocket.Receive(buffer, 4, SocketFlags.None);
+
+            if (bytesRead != 8)
+            {
+                throw new InvalidOperationException($"The size of the object could not be read.");
+            }
+
+            long objLength = BitConverter.ToInt64(buffer, 0);
+            List<byte> objBytes = new List<byte>();
+            int totalBytesRead = 0;
+            string intentAction = messageType.GetIntentAction(false);
+
+            buffer = new byte[Step];
+            while ((bytesRead = clientSocket.Receive(buffer, Step, SocketFlags.None)) > 0)
+            {
+                totalBytesRead += bytesRead;
+                objBytes.AddRange(buffer);
+
+                // Broadcast progress
+                Intent progressIntent = new WifiP2pMessageIntent(intentAction, (float)totalBytesRead / objLength, false, msg);
+                context.SendBroadcast(progressIntent);
+            }
+
+            if (totalBytesRead != objLength)
+            {
+                throw new InvalidOperationException($"Error while reading the object : {bytesRead} bytes read but object should be {objLength} bytes long.");
+            }
+
+            // Deserialize the object.
+            var formatter = new BinaryFormatter();
+            msg.Data = formatter.Deserialize(new MemoryStream(objBytes.ToArray())) as IParcelable;
+
+            // Broadcast completion
+            Intent doneIntent = new WifiP2pMessageIntent(intentAction, 1, true, msg);
+            context.SendBroadcast(doneIntent);
         }
+
+        /// <summary>
+        /// Method used by the creator to create a message from a parcel.
+        /// </summary>
+        /// <param name="in">The parcel.</param>
+        /// <returns>The message created from the parcel.</returns>
+        static public Message FromParcel(Parcel @in)
+        {
+            if (@in == null)
+            {
+                throw new ArgumentNullException(nameof(@in));
+            }
+
+            var msg = new Message
+            {
+                MessageType = (EMessageType)((byte)@in.ReadByte()),
+                Length = @in.ReadLong(),
+                TypeLitteral = @in.ReadString()
+            };
+
+            Type objType = Type.GetType(msg.TypeLitteral);
+            msg.Data = @in.ReadParcelable(Java.Lang.Class.FromType(objType).ClassLoader) as IParcelable;
+
+            return msg;
+        }
+
+        /// <summary>
+        /// The method used to access the creator for this parcelable.
+        /// </summary>
+        /// <returns>The parcelable creator.</returns>
+        [ExportField("CREATOR")]
+        static public ParcelableCreator<Message> GetCreator() => s_Creator;
 
         #endregion Static methods
 
@@ -131,27 +153,41 @@ namespace iDatech.WifiP2p.Poc.WifiP2p
         public long Length { get; private set; }
 
         /// <summary>
-        /// <see cref="IWifiP2pMessage.Object"/>
+        /// The type litteral of the object that is being sent.
+        /// Needed to get the class loader to decode parcel.
         /// </summary>
-        public IParcelable Object { get; private set; }
+        public string TypeLitteral { get; private set; }
+
+        /// <summary>
+        /// <see cref="IWifiP2pMessage.Data"/>
+        /// </summary>
+        public IParcelable Data { get; private set; }
 
         /// <summary>
         /// Is the current message carrying data ?
         /// </summary>
-        public bool IsCarryingData => MessageType.IsCarryingData() && Object != null;
+        public bool IsCarryingData => MessageType.IsCarryingData() && Data != null;
 
         #endregion Properties
 
         #region Constructors
 
         /// <summary>
+        /// Parameterless constructor needed for the <see cref="IParcelable"/> interface.
+        /// </summary>
+        public Message() { }
+
+        /// <summary>
         /// Default constructor.
         /// Specify the message type.
         /// </summary>
         /// <param name="messageType">The message type.</param>
-        public Message(EMessageType messageType)
+        /// <param name="data">The optional parcelable data to send alongside the message.</param>
+        public Message(EMessageType messageType, IParcelable data = null)
         {
             MessageType = messageType;
+            Data = data;
+            TypeLitteral = data?.GetType().AssemblyQualifiedName;
         }
 
         #endregion Constructors
@@ -165,14 +201,10 @@ namespace iDatech.WifiP2p.Poc.WifiP2p
         /// <param name="obj">The object to send.</param>
         /// <param name="context">The context needed to send the broadcast.</param>
         /// <remarks>Depending on the current message type, only one object type will be supported.</remarks>
-        public void Send(Socket clientSocket, IParcelable obj, Context context)
+        public void Send(Socket clientSocket, Context context)
         {
-            Object = obj ?? throw new ArgumentNullException(nameof(obj));
-
             var formatter = new BinaryFormatter();
-            string intentAction = MessageType == EMessageType.SendData
-                    ? WifiP2pMessageIntent.ActionSendDataProgress
-                    : WifiP2pMessageIntent.ActionSendFileProgress;
+            string intentAction = MessageType.GetIntentAction(true);
 
             // First send the message type.
             byte[] buffer = new byte[1];
@@ -180,27 +212,49 @@ namespace iDatech.WifiP2p.Poc.WifiP2p
             clientSocket.SendBufferSize = buffer.Length;
             clientSocket.Send(buffer);
 
-            // Then send the object length (in bytes)
-            buffer = BitConverter.GetBytes(Length);
-            clientSocket.SendBufferSize = buffer.Length;
-            clientSocket.Send(buffer);
-
-            using (MemoryStream ms = new MemoryStream())
+            // Then send the object length (in bytes) if the message is carrying data.
+            if (IsCarryingData)
             {
-                formatter.Serialize(ms, obj);
-                buffer = ms.ToArray();
-                for (int i = 0; i < buffer.Length;)
+                buffer = BitConverter.GetBytes(Length);
+                clientSocket.SendBufferSize = buffer.Length;
+                clientSocket.Send(buffer);
+
+                using (MemoryStream ms = new MemoryStream())
                 {
-                    clientSocket.SendBufferSize = Step;
-                    i += clientSocket.Send(buffer, i, Step, SocketFlags.None);
-                    Intent progressIntent = new WifiP2pMessageIntent<IParcelable>(intentAction, (float)i / buffer.Length, false, obj);
-                    context.SendBroadcast(progressIntent);
+                    formatter.Serialize(ms, Data);
+                    buffer = ms.ToArray();
+                    for (int i = 0; i < buffer.Length;)
+                    {
+                        clientSocket.SendBufferSize = Step;
+                        i += clientSocket.Send(buffer, i, Step, SocketFlags.None);
+                        Intent progressIntent = new WifiP2pMessageIntent(intentAction, (float)i / buffer.Length, false, this);
+                        context.SendBroadcast(progressIntent);
+                    }
                 }
             }
 
             // Broadcast completion.
-            Intent doneIntent = new WifiP2pMessageIntent<IParcelable>(intentAction, 1, true, obj);
+            Intent doneIntent = new WifiP2pMessageIntent(intentAction, 1, true, this);
             context.SendBroadcast(doneIntent);
+        }
+
+        /// <summary>
+        /// <see cref="IParcelable.DescribeContents"/>
+        /// </summary>
+        public int DescribeContents()
+        {
+            return GetHashCode();
+        }
+
+        /// <summary>
+        /// <see cref="IParcelable.WriteToParcel(Parcel, ParcelableWriteFlags)"/>
+        /// </summary>
+        public void WriteToParcel(Parcel dest, [GeneratedEnum] ParcelableWriteFlags flags)
+        {
+            dest.WriteByte((sbyte)MessageType);
+            dest.WriteLong(Length);
+            dest.WriteString(TypeLitteral);
+            dest.WriteParcelable(Data, ParcelableWriteFlags.None);
         }
 
         #endregion Methods

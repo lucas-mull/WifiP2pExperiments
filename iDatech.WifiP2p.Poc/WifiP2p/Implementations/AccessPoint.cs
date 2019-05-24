@@ -172,8 +172,8 @@ namespace iDatech.WifiP2p.Poc.WifiP2p.Implementations
                 m_ServerServiceIntent = new Intent(context, typeof(ServerListeningService));
                 m_ServerServiceIntent.PutExtra(ServerListeningService.ExtraIpAddress, hostAddress);
                 m_ServerServiceIntent.PutExtra(ServerListeningService.ExtraListeningPort, port);
-                context.StartService(m_ServerServiceIntent);
 
+                context.StartService(m_ServerServiceIntent);
                 IsListening = true;
             }
         }

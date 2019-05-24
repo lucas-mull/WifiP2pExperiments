@@ -1,6 +1,5 @@
 ﻿
 using Android.App;
-using Android.Content;
 using Android.Content.PM;
 using Android.Net;
 using Android.Net.Wifi.P2p;
@@ -10,10 +9,10 @@ using Android.Views;
 using Android.Widget;
 using iDatech.WifiP2p.Poc.Activities.Views;
 using iDatech.WifiP2p.Poc.Permissions;
+using iDatech.WifiP2p.Poc.WifiP2p;
 using iDatech.WifiP2p.Poc.WifiP2p.Enums;
 using iDatech.WifiP2p.Poc.WifiP2p.Implementations;
 using iDatech.WifiP2p.Poc.WifiP2p.Interfaces;
-using iDatech.WifiP2p.Poc.WifiP2p.Services;
 using System.Collections.Generic;
 
 namespace iDatech.WifiP2p.Poc.Activities
@@ -85,14 +84,6 @@ namespace iDatech.WifiP2p.Poc.Activities
         }
 
         /// <summary>
-        /// <see cref="IWifiP2pCallbacksHandler.OnPeersAvailable(WifiP2pDeviceList)"/>
-        /// </summary>
-        override public void OnPeersAvailable(WifiP2pDeviceList peers)
-        {
-            // Do nothing here, we're not interested in discovering peers.
-        }
-
-        /// <summary>
         /// <see cref="IWifiP2pCallbacksHandler.OnThisDeviceChanged(WifiP2pDevice)"/>
         /// </summary>
         override public void OnThisDeviceChanged(WifiP2pDevice deviceDetails)
@@ -147,24 +138,18 @@ namespace iDatech.WifiP2p.Poc.Activities
         /// </summary>
         override public void OnWifiP2pConnectionChanged(NetworkInfo networkInfo, WifiP2pInfo p2pInfo, WifiP2pGroup groupInfo)
         {
+            base.OnWifiP2pConnectionChanged(networkInfo, p2pInfo, groupInfo);
             if (networkInfo.IsConnected)
             {
-
                 m_Views.SsidTextView.Text = groupInfo.NetworkName;
 
                 foreach (WifiP2pDevice device in groupInfo.ClientList)
                 {
-                    AddClient(device);
+                    m_Clients.Add(device);
                 }
 
                 m_Adapter.NotifyDataSetChanged();
             }
-            else
-            {
-                // TODO disconnection.
-                StopService(m_ServerServiceIntent);
-                AccessPoint.Instance.StartListening(false);
-            }            
         }
 
         /// <summary>
@@ -198,28 +183,42 @@ namespace iDatech.WifiP2p.Poc.Activities
         {
             foreach (WifiP2pDevice device in group.ClientList)
             {
-                AddClient(device);
+                m_Clients.Add(device);
             }
 
             m_Adapter.NotifyDataSetChanged();
         }
 
         /// <summary>
-        /// <see cref="WifiP2pActivity.OnConnectionInfoAvailable(WifiP2pInfo)"/>
+        /// <see cref="WifiP2pActivity.OnMessageReceivedProgressChanged(EMessageType, float)"/>
         /// </summary>
-        override public void OnConnectionInfoAvailable(WifiP2pInfo info)
+        override public void OnMessageReceivedProgressChanged(EMessageType message, float progress)
         {
-            // Do nothing
+            throw new System.NotImplementedException();
         }
 
         /// <summary>
-        /// Add a new client both to the recycler view's adapter data source and to the data singleton.
+        /// <see cref="WifiP2pActivity.OnMessageReceived(WifiP2p.Message)"/>
         /// </summary>
-        /// <param name="device">The device to add.</param>
-        private void AddClient(WifiP2pDevice device)
+        override public void OnMessageReceived(WifiP2p.Message message)
         {
-            m_Clients.Add(device);
-            AccessPoint.Instance.TryAddClient(device.DeviceAddress);
+            throw new System.NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="WifiP2pActivity.OnMessageSendingProgressChanged(WifiP2p.Message, float)"/>
+        /// </summary>
+        override public void OnMessageSendingProgressChanged(WifiP2p.Message message, float progress)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="WifiP2pActivity.OnMessageSent(WifiP2p.Message)"/>
+        /// </summary>
+        override public void OnMessageSent(WifiP2p.Message message)
+        {
+            throw new System.NotImplementedException();
         }
 
         #endregion Methods
